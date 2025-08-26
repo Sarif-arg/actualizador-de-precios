@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotes Portofino</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .transition-height {
+      transition: height 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">Lotes Disponibles - Portofino</h1>
+    <div id="acordeones" class="space-y-4"></div>
+  </div>
+
+  <script>
+    fetch("datos.json")
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById("acordeones");
+
+        Object.keys(data).forEach(sector => {
+          const lotes = data[sector];
+
+          const accordion = document.createElement("div");
+          accordion.className = "bg-white shadow rounded-2xl overflow-hidden";
+
+          const header = document.createElement("button");
+          header.className = "w-full text-left p-4 font-semibold text-lg flex justify-between items-center";
+          header.innerHTML = `<span>Sector ${sector}</span><span class="transform transition-transform">+</span>`;
+
+          const content = document.createElement("div");
+          content.className = "h-0 overflow-hidden transition-height px-4";
+
+          let table = `<table class="min-w-full border-collapse border border-gray-300 text-sm">
+              <thead class="bg-gray-200">
+                <tr>
+                  <th class="border border-gray-300 px-3 py-2">Lote</th>
+                  <th class="border border-gray-300 px-3 py-2">Superficie (m²)</th>
+                  <th class="border border-gray-300 px-3 py-2">Estado</th>
+                </tr>
+              </thead>
+              <tbody>`;
+
+          lotes.forEach(lote => {
+            let estadoColor =
+              lote.Estado === "Disponible" ? "text-green-600 font-bold" :
+              lote.Estado === "Reservado" ? "text-yellow-600 font-semibold" :
+              "text-red-600 font-semibold";
+
+            table += `<tr>
+                <td class="border border-gray-300 px-3 py-2">${lote.Lote}</td>
+                <td class="border border-gray-300 px-3 py-2">${lote.Superficie}</td>
+                <td class="border border-gray-300 px-3 py-2 ${estadoColor}">${lote.Estado}</td>
+              </tr>`;
+          });
+
+          table += "</tbody></table>";
+          content.innerHTML = table;
+
+          header.addEventListener("click", () => {
+            const icon = header.querySelector("span:last-child");
+            const isHidden = content.style.height === "0px" || !content.style.height;
+
+            if(isHidden) {
+              content.style.height = content.scrollHeight + "px";
+              icon.textContent = "−";
+            } else {
+              content.style.height = "0px";
+              icon.textContent = "+";
+            }
+          });
+
+          accordion.appendChild(header);
+          accordion.appendChild(content);
+          container.appendChild(accordion);
+        });
+      })
+      .catch(error => console.error("Error cargando JSON:", error));
+  </script>
+</body>
+</html>
