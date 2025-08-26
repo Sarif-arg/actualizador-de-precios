@@ -40,7 +40,7 @@ column_names = [
 data = {}
 for sheet_name in valid_sheets:
     ws = sh.worksheet(sheet_name)
-    rows = ws.get_all_values()[1:]  # saltamos encabezado
+    rows = ws.get_all_values()[2:]  # saltamos encabezado
     parsed = []
 
     for row in rows:

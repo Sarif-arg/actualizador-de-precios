@@ -1,19 +1,6 @@
 {
   "A1": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "364,20",
       "precio_contado": "30.185 USD",
@@ -132,19 +119,6 @@
     }
   ],
   "A2": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "364,20",
@@ -408,19 +382,6 @@
   ],
   "A3": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "364,20",
       "precio_contado": "24.333 USD",
@@ -513,19 +474,6 @@
     }
   ],
   "A4": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "364,20",
@@ -867,19 +815,6 @@
   ],
   "B1": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "490,00",
       "precio_contado": "35948,00",
@@ -1063,19 +998,6 @@
     }
   ],
   "B2": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "490,00",
@@ -1300,19 +1222,6 @@
   ],
   "B3": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "490,00",
       "precio_contado": "35112,00",
@@ -1405,19 +1314,6 @@
     }
   ],
   "B4": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "490,00",
@@ -1524,19 +1420,6 @@
     }
   ],
   "C1": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "490,00",
@@ -1708,19 +1591,6 @@
     }
   ],
   "C2": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "490,00",
@@ -2088,19 +1958,6 @@
   ],
   "C3": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "490,00",
       "precio_contado": "30096,00",
@@ -2246,19 +2103,6 @@
   ],
   "D1": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "838,10",
       "precio_contado": "77062,48",
@@ -2326,19 +2170,6 @@
   ],
   "D2": [
     {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
-    {
       "numero": "1",
       "superficie": "462,00",
       "precio_contado": "38623,20",
@@ -2405,19 +2236,6 @@
     }
   ],
   "L1": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "530,47",
@@ -2654,19 +2472,6 @@
     }
   ],
   "L2": [
-    {
-      "numero": "",
-      "superficie": "",
-      "precio_contado": "",
-      "plan36_entrega_inicial": "ENTREGA",
-      "plan36_cuotas": "36 CUOTAS DE",
-      "plan36_precio_final": "PRECIO FINAL",
-      "plan60_entrega_inicial": "ENTREGA",
-      "plan60_cuotas": "60 CUOTAS DE",
-      "plan60_precio_final": "PRECIO FINAL",
-      "fecha_entrega": "",
-      "estado": ""
-    },
     {
       "numero": "1",
       "superficie": "770,78",
