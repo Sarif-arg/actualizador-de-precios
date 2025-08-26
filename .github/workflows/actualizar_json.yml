@@ -28,9 +28,8 @@ jobs:
 
       - name: Commit & Push cambios
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add datos.json
-          git commit -m "Actualización automática de JSON"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
-        continue-on-error: true
+          git commit -m "Actualización automática de precios" || echo "No hay cambios"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
