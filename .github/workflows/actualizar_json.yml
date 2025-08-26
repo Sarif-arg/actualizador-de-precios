@@ -1,5 +1,10 @@
 name: Actualizar JSON desde Google Sheets
 
+permissions:
+  contents: write  # Necesario para poder hacer push
+  actions: read
+  checks: read
+
 on:
   schedule:
     - cron: "0 12 * * *"  # Todos los días a las 12:00 UTC
