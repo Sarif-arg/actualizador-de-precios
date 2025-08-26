@@ -2,13 +2,19 @@ import gspread
 import json
 import os
 
-# Autenticación con Google Service Account
-gc = gspread.service_account(filename="D:\Descargas\Programacion\Actualizar precios portofino\credenciales.json")
+# Leer credenciales desde variable de entorno
+# GitHub Actions define GOOGLE_CREDENTIALS_ACTUALIZADOR
+creds_json = os.environ.get("GOOGLE_CREDENTIALS_ACTUALIZADOR")
+if not creds_json:
+    raise ValueError("No se encontró la variable de entorno GOOGLE_CREDENTIALS_ACTUALIZADOR")
 
-# Abrir archivo por nombre
+creds_dict = json.loads(creds_json)  # convertir string JSON en dict
+gc = gspread.service_account_from_dict(creds_dict)
+
+# Abrir planilla por ID
 sh = gc.open_by_key("1faQLs3WhxNTeC1wmDi4Y9kD6ktnqPNeTO5h3ITzlaeg")
 
-# Hojas válidas (descartamos "Directorio")
+# Hojas válidas
 valid_sheets = [
     "A1", "A2", "A3", "A4",
     "B1", "B2", "B3", "B4",
@@ -17,7 +23,6 @@ valid_sheets = [
     "L1", "L2"
 ]
 
-# Nombres de columnas esperadas
 column_names = [
     "numero",
     "superficie",
@@ -32,23 +37,21 @@ column_names = [
     "estado"
 ]
 
-# Parsear datos
 data = {}
 for sheet_name in valid_sheets:
     ws = sh.worksheet(sheet_name)
-    rows = ws.get_all_values()[2:]  # saltamos el header (fila 1)
+    rows = ws.get_all_values()[1:]  # saltamos encabezado
     parsed = []
 
     for row in rows:
-        if len(row) < len(column_names):  # rellenar si faltan columnas
+        if len(row) < len(column_names):
             row += [""] * (len(column_names) - len(row))
         parsed.append(dict(zip(column_names, row)))
 
     data[sheet_name] = parsed
 
-# Guardar en JSON en el mismo directorio que el script
 output_path = os.path.join(os.path.dirname(__file__), "datos.json")
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
-print("✅ JSON generado con éxito: datos.json")
+print(f"✅ JSON generado con éxito en {output_path}")
