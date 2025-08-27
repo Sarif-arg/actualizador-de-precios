@@ -36,6 +36,8 @@ Ejemplo:
   ]}
 ```
 
+---
+
 ## 3. Frontend (HTML + JS + Tailwind)
 
 Cada sector se renderiza en un acordeón.
@@ -50,12 +52,16 @@ En pantallas chicas (<760px), las tablas se transforman en cards:
 Cada fila pasa a ocupar un bloque con etiquetas tipo “N°”, “Superficie”, etc.
 Esto evita el scroll horizontal.
 
+---
+
 ## 4. Workflow en GitHub Actions
 
 Archivo: .github/workflows/update.yml
 Corre todos los días a las 03:00 UTC.
 Instala dependencias, ejecuta el script y hace commit automático.
 Usa un PAT (Personal Access Token) guardado en GH_PAT.
+
+---
 
 ## 5. Cómo ejecutar manualmente
 
@@ -67,12 +73,16 @@ git add datos.json
 git commit -m "Actualización manual"
 git push origin main
 
+---
+
 ## 6. Archivos principales
 
 obtener_precios.py → Script que lee Google Sheets y genera datos.json.
 datos.json → Archivo actualizado con la info de precios.
 index.html → Interfaz web con acordeones y tablas responsive.
 .github/workflows/update.yml → Automatización de GitHub Actions.
+
+---
 
 ## 7. Mantenimiento futuro
 
