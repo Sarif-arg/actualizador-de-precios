@@ -60,17 +60,17 @@
                 <tbody>
                   ${lotes.map(lote => `
                     <tr class="hover:bg-gray-50">
-                      <td class="border border-gray-300 px-3 py-2">${lote["Numero"]}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Superficie"]}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Precio de contado"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 36, Entrega inicial"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 36, Cuotas"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 36, Precio final"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 60, Entrega inicial"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 60, Cuotas"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 60, Precio final"]).toLocaleString()}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Fecha de entrega"]}</td>
-                      <td class="border border-gray-300 px-3 py-2 ${getEstadoClass(lote["Estado"])}">${lote["Estado"]}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Numero"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Superficie"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Precio de contado"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 36, Entrega inicial"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 36, Cuotas"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 36, Precio final"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 60, Entrega inicial"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 60, Cuotas"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 60, Precio final"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Fecha de entrega"] || ""}</td>
+                      <td class="border border-gray-300 px-3 py-2 ${getEstadoClass(lote["Estado"])}">${lote["Estado"] || ""}</td>
                     </tr>
                   `).join("")}
                 </tbody>
