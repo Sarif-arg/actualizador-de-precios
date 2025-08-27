@@ -8,11 +8,60 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.2/cdn.min.js" defer></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+    <style>
+    @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+
+      /* Hacer que todo se comporte como bloques */
+      table, thead, tbody, th, td, tr { 
+        display: block; 
+      }
+
+      /* Escondemos headers visualmente */
+      thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr { 
+        border: 1px solid #ddd; 
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      td { 
+        border: none;
+        border-bottom: 1px solid #eee; 
+        position: relative;
+        padding-left: 50%;  
+        text-align: left;
+      }
+
+      td:before { 
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        font-weight: 600;
+        color: #555;
+      }
+    
+    /* Etiquetas para cada celda */
+      td::before {
+        content: attr(data-label);
+      }
+    }
+  </style>
   <div class="w-full max-w-6xl mx-auto space-y-4" x-data="{ open: null }" id="acordeones">
     <!-- Aquí se generarán los acordeones dinámicamente -->
   </div>
 
   <script>
+
     async function cargarDatos() {
       try {
         const response = await fetch("datos.json");
@@ -40,37 +89,37 @@
               <table class="min-w-full border-collapse border border-gray-300 text-sm">
                 <thead class="bg-gray-200">
                   <tr>
-                    <th rowspan="2" class="border border-gray-300 px-3 py-2">N°</th>
-                    <th rowspan="2" class="border border-gray-300 px-3 py-2">SUP. m²</th>
-                    <th rowspan="2" class="border border-gray-300 px-3 py-2">PRECIO DE CONTADO</th>
-                    <th colspan="3" class="border border-gray-300 px-3 py-2">PLAN 36</th>
-                    <th colspan="3" class="border border-gray-300 px-3 py-2">PLAN 60</th>
-                    <th rowspan="2" class="border border-gray-300 px-3 py-2">ENTREGA</th>
-                    <th rowspan="2" class="border border-gray-300 px-3 py-2">ESTADO</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2 w-[40px]">N°</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2 w-[90px]">SUP. m²</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2 w-[120px]">PRECIO DE CONTADO</th>
+                    <th colspan="3" class="border border-gray-300 px-3 py-2 w-[120px]">PLAN 36</th>
+                    <th colspan="3" class="border border-gray-300 px-3 py-2 w-[120px]">PLAN 60</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2 w-[110px]">ENTREGA</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2 w-[110px]">ESTADO</th>
                   </tr>
                   <tr>
-                    <th class="border border-gray-300 px-3 py-2">ENTREGA</th>
-                    <th class="border border-gray-300 px-3 py-2">36 CUOTAS DE</th>
-                    <th class="border border-gray-300 px-3 py-2">PRECIO FINAL</th>
-                    <th class="border border-gray-300 px-3 py-2">ENTREGA</th>
-                    <th class="border border-gray-300 px-3 py-2">60 CUOTAS DE</th>
-                    <th class="border border-gray-300 px-3 py-2">PRECIO FINAL</th>
+                    <th class="border border-gray-300 px-3 py-2 w-[110px]">ENTREGA</th>
+                    <th class="border border-gray-300 px-3 py-2 w-[120px]">36 CUOTAS DE</th>
+                    <th class="border border-gray-300 px-3 py-2 w-[120px]">PRECIO FINAL</th>
+                    <th class="border border-gray-300 px-3 py-2 w-[110px]">ENTREGA</th>
+                    <th class="border border-gray-300 px-3 py-2 w-[120px]">60 CUOTAS DE</th>
+                    <th class="border border-gray-300 px-3 py-2 w-[120px]">PRECIO FINAL</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${lotes.map(lote => `
-                    <tr class="hover:bg-gray-50">
-                      <td class="border border-gray-300 px-3 py-2">${lote["Numero"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Superficie"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Precio de contado"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 36, Entrega inicial"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 36, Cuotas"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 36, Precio final"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 60, Entrega inicial"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 60, Cuotas"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Plan 60, Precio final"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2">${lote["Fecha de entrega"] || ""}</td>
-                      <td class="border border-gray-300 px-3 py-2 ${getEstadoClass(lote["Estado"])}">${lote["Estado"] || ""}</td>
+                    <tr class="hover:bg-gray-50 ${getEstadoClass(lote.estado)}">
+                      <td data-label="N°">${lote.numero || ""}</td>
+                      <td data-label="SUP. m²">${lote.superficie || ""}</td>
+                      <td data-label="PRECIO DE CONTADO">${lote.precio_contado || ""}</td>
+                      <td data-label="ENTREGA (Plan 36)">${lote.plan36_entrega_inicial || ""}</td>
+                      <td data-label="36 CUOTAS DE">${lote.plan36_cuotas || ""}</td>
+                      <td data-label="PRECIO FINAL (Plan 36)">${lote.plan36_precio_final || ""}</td>
+                      <td data-label="ENTREGA (Plan 60)">${lote.plan60_entrega_inicial || ""}</td>
+                      <td data-label="60 CUOTAS DE">${lote.plan60_cuotas || ""}</td>
+                      <td data-label="PRECIO FINAL (Plan 60)">${lote.plan60_precio_final || ""}</td>
+                      <td data-label="FECHA ENTREGA">${lote.fecha_entrega || ""}</td>
+                      <td data-label="ESTADO">${lote.estado || ""}</td>
                     </tr>
                   `).join("")}
                 </tbody>
@@ -87,13 +136,13 @@
 
     // Colores pastel según estado
     function getEstadoClass(estado) {
-      switch (estado) {
-        case "Disponible":
-          return "bg-green-200 text-green-800 font-semibold";
-        case "Reservado":
-          return "bg-yellow-200 text-yellow-800 font-semibold";
-        case "Vendido":
-          return "bg-red-200 text-red-800 font-semibold";
+      switch ((estado || "").toLowerCase()) {
+        case "disponible":
+          return "bg-green-100 text-green-800 font-semibold"; // verde pastel
+        case "reservado":
+          return "bg-yellow-100 text-yellow-800 font-semibold"; // amarillo pastel
+        case "vendido":
+          return "bg-red-100 text-red-800 font-semibold"; // rojo pastel
         default:
           return "";
       }
