@@ -41,18 +41,14 @@
 
       td:before { 
         position: absolute;
-        top: 6px;
         left: 6px;
         width: 45%; 
         padding-right: 10px; 
         white-space: nowrap;
-        font-weight: 600;
+        font-weight: 700;
         color: #555;
-      }
-    
-    /* Etiquetas para cada celda */
-      td::before {
         content: attr(data-label);
+        text-align: right;
       }
     }
   </style>
@@ -112,12 +108,12 @@
                       <td data-label="N°">${lote.numero || ""}</td>
                       <td data-label="SUP. m²">${lote.superficie || ""}</td>
                       <td data-label="PRECIO DE CONTADO">${lote.precio_contado || ""}</td>
-                      <td data-label="ENTREGA (Plan 36)">${lote.plan36_entrega_inicial || ""}</td>
+                      <td data-label="(Plan 36) ENTREGA">${lote.plan36_entrega_inicial || ""}</td>
                       <td data-label="36 CUOTAS DE">${lote.plan36_cuotas || ""}</td>
-                      <td data-label="PRECIO FINAL (Plan 36)">${lote.plan36_precio_final || ""}</td>
-                      <td data-label="ENTREGA (Plan 60)">${lote.plan60_entrega_inicial || ""}</td>
+                      <td data-label="(Plan 36) PRECIO FINAL">${lote.plan36_precio_final || ""}</td>
+                      <td data-label="(Plan 60) ENTREGA">${lote.plan60_entrega_inicial || ""}</td>
                       <td data-label="60 CUOTAS DE">${lote.plan60_cuotas || ""}</td>
-                      <td data-label="PRECIO FINAL (Plan 60)">${lote.plan60_precio_final || ""}</td>
+                      <td data-label="(Plan 60) PRECIO FINAL">${lote.plan60_precio_final || ""}</td>
                       <td data-label="FECHA ENTREGA">${lote.fecha_entrega || ""}</td>
                       <td data-label="ESTADO">${lote.estado || ""}</td>
                     </tr>
