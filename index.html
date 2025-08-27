@@ -3,84 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lotes Portofino</title>
+  <title>Precios Portofino</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .transition-height {
-      transition: height 0.3s ease;
-    }
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.2/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center">Lotes Disponibles - Portofino</h1>
-    <div id="acordeones" class="space-y-4"></div>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-6xl mx-auto space-y-4" x-data="{ open: null }" id="acordeones">
+    <!-- Aquí se generarán los acordeones dinámicamente -->
   </div>
 
   <script>
-    fetch("datos.json")
-      .then(response => response.json())
-      .then(data => {
-        const container = document.getElementById("acordeones");
+    async function cargarDatos() {
+      try {
+        const response = await fetch("datos.json");
+        const data = await response.json();
 
-        Object.keys(data).forEach(sector => {
-          const lotes = data[sector];
+        const acordeonesContainer = document.getElementById("acordeones");
+        let index = 0;
 
-          const accordion = document.createElement("div");
-          accordion.className = "bg-white shadow rounded-2xl overflow-hidden";
+        for (const [sector, lotes] of Object.entries(data)) {
+          index++;
+          const acordeon = document.createElement("div");
+          acordeon.className = "border border-gray-300 rounded-2xl shadow bg-white overflow-hidden";
 
-          const header = document.createElement("button");
-          header.className = "w-full text-left p-4 font-semibold text-lg flex justify-between items-center";
-          header.innerHTML = `<span>Sector ${sector}</span><span class="transform transition-transform">+</span>`;
+          acordeon.innerHTML = `
+            <button 
+              @click="open === ${index} ? open = null : open = ${index}"
+              class="w-full flex justify-between items-center px-6 py-4 text-lg font-semibold bg-gray-200 hover:bg-gray-300 transition"
+            >
+              <span>Sector ${sector}</span>
+              <svg :class="open === ${index} ? 'rotate-180' : ''" class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open === ${index}" x-transition class="p-4 overflow-x-auto">
+              <table class="min-w-full border-collapse border border-gray-300 text-sm">
+                <thead class="bg-gray-200">
+                  <tr>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2">N°</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2">SUP. m²</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2">PRECIO DE CONTADO</th>
+                    <th colspan="3" class="border border-gray-300 px-3 py-2">PLAN 36</th>
+                    <th colspan="3" class="border border-gray-300 px-3 py-2">PLAN 60</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2">ENTREGA</th>
+                    <th rowspan="2" class="border border-gray-300 px-3 py-2">ESTADO</th>
+                  </tr>
+                  <tr>
+                    <th class="border border-gray-300 px-3 py-2">ENTREGA</th>
+                    <th class="border border-gray-300 px-3 py-2">36 CUOTAS DE</th>
+                    <th class="border border-gray-300 px-3 py-2">PRECIO FINAL</th>
+                    <th class="border border-gray-300 px-3 py-2">ENTREGA</th>
+                    <th class="border border-gray-300 px-3 py-2">60 CUOTAS DE</th>
+                    <th class="border border-gray-300 px-3 py-2">PRECIO FINAL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lotes.map(lote => `
+                    <tr class="hover:bg-gray-50">
+                      <td class="border border-gray-300 px-3 py-2">${lote["Numero"]}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Superficie"]}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Precio de contado"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 36, Entrega inicial"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 36, Cuotas"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 36, Precio final"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 60, Entrega inicial"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 60, Cuotas"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">$${Number(lote["Plan 60, Precio final"]).toLocaleString()}</td>
+                      <td class="border border-gray-300 px-3 py-2">${lote["Fecha de entrega"]}</td>
+                      <td class="border border-gray-300 px-3 py-2 ${getEstadoClass(lote["Estado"])}">${lote["Estado"]}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `;
 
-          const content = document.createElement("div");
-          content.className = "h-0 overflow-hidden transition-height px-4";
+          acordeonesContainer.appendChild(acordeon);
+        }
+      } catch (error) {
+        console.error("Error cargando datos:", error);
+      }
+    }
 
-          let table = `<table class="min-w-full border-collapse border border-gray-300 text-sm">
-              <thead class="bg-gray-200">
-                <tr>
-                  <th class="border border-gray-300 px-3 py-2">Lote</th>
-                  <th class="border border-gray-300 px-3 py-2">Superficie (m²)</th>
-                  <th class="border border-gray-300 px-3 py-2">Estado</th>
-                </tr>
-              </thead>
-              <tbody>`;
+    // Colores pastel según estado
+    function getEstadoClass(estado) {
+      switch (estado) {
+        case "Disponible":
+          return "bg-green-200 text-green-800 font-semibold";
+        case "Reservado":
+          return "bg-yellow-200 text-yellow-800 font-semibold";
+        case "Vendido":
+          return "bg-red-200 text-red-800 font-semibold";
+        default:
+          return "";
+      }
+    }
 
-          lotes.forEach(lote => {
-            let estadoColor =
-              lote.Estado === "Disponible" ? "text-green-600 font-bold" :
-              lote.Estado === "Reservado" ? "text-yellow-600 font-semibold" :
-              "text-red-600 font-semibold";
-
-            table += `<tr>
-                <td class="border border-gray-300 px-3 py-2">${lote.Lote}</td>
-                <td class="border border-gray-300 px-3 py-2">${lote.Superficie}</td>
-                <td class="border border-gray-300 px-3 py-2 ${estadoColor}">${lote.Estado}</td>
-              </tr>`;
-          });
-
-          table += "</tbody></table>";
-          content.innerHTML = table;
-
-          header.addEventListener("click", () => {
-            const icon = header.querySelector("span:last-child");
-            const isHidden = content.style.height === "0px" || !content.style.height;
-
-            if(isHidden) {
-              content.style.height = content.scrollHeight + "px";
-              icon.textContent = "−";
-            } else {
-              content.style.height = "0px";
-              icon.textContent = "+";
-            }
-          });
-
-          accordion.appendChild(header);
-          accordion.appendChild(content);
-          container.appendChild(accordion);
-        });
-      })
-      .catch(error => console.error("Error cargando JSON:", error));
+    cargarDatos();
   </script>
 </body>
 </html>
