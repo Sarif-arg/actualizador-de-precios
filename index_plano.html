@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mapa Portofino</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    #map { height: 95vh; width: 95vw; margin: 0 auto; }
+
+    /* Estilo panel/leyenda */
+    .info-panel.leaflet-control,
+    .legend.leaflet-control {
+      background: rgba(255,255,255,0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+      font-family: system-ui, sans-serif;
+      color: #333;
+    }
+    .info-panel.leaflet-control { padding: 10px 14px; max-width: 260px; }
+    .info-panel.leaflet-control h4 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+    .legend.leaflet-control { padding: 8px 12px; font-size: 13px; line-height: 18px; }
+    .legend i { width: 14px; height: 14px; float: left; margin-right: 8px; opacity: .9; }
+
+    /* Popup lindo */
+    .custom-popup .leaflet-popup-content-wrapper {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+      padding: 10px; animation: fadeInUp .3s ease-out;
+    }
+    .custom-popup .leaflet-popup-tip { background: rgba(255,255,255,0.8); backdrop-filter: blur(6px); }
+    .popup-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #333; }
+    .popup-info { font-size: .9rem; color: #444; line-height: 1.3; }
+    @keyframes fadeInUp { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: none;} }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const originalWidth = 3000, originalHeight = 1053;
+    const bounds = [[0,0], [originalHeight, originalWidth]];
+
+    const map = L.map("map", { crs: L.CRS.Simple, minZoom: -2 }).fitBounds(bounds);
+
+    // Fondo (no interactivo)
+    L.imageOverlay("plano_portofino.svg", bounds, { interactive:false, zIndex:1 }).addTo(map);
+
+    // Colores por estado (+ ProximaEtapa)
+    function getColor(estado, id) {
+      if (id.includes("ProximaEtapa")) return "#333";
+      switch (estado) {
+        case "Disponible": return "#55d400";
+        case "Reservado":  return "#ffd93b";
+        case "Vendido":    return "#d40000";
+        default:           return "#cccccc";
+      }
+    }
+
+    // Controles
+    const infoControl = L.control({ position: "topright" });
+    infoControl.onAdd = function() {
+      this._div = L.DomUtil.create("div", "info-panel leaflet-control");
+      this.update();
+      return this._div;
+    };
+    infoControl.update = function(html, title = "Información del lote") {
+      this._div.innerHTML = `<h4>${title}</h4>${html || "Seleccione un lote"}`;
+    };
+    infoControl.addTo(map);
+
+    const legend = L.control({ position: "bottomright" });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create("div", "legend leaflet-control");
+      div.innerHTML = `
+        <div><i style="background:#55d400"></i> Disponible</div>
+        <div><i style="background:#ffd93b"></i> Reservado</div>
+        <div><i style="background:#d40000"></i> Vendido</div>
+        <div><i style="background:#999"></i> Próxima etapa</div>
+      `;
+      return div;
+    };
+    legend.addTo(map);
+
+    // Carga de datos
+    Promise.all([
+      fetch("portofino.geojson").then(r => r.json()),
+      fetch("datos.json").then(r => r.json())
+    ])
+    .then(([geoData, lotesData]) => {
+      function findLoteInfo(geoId) {
+        if (geoId.includes("ProximaEtapa")) return null;
+        const m = geoId.match(/Sector_(\w+)_Lote_(\d+)/);
+        if (!m) return null;
+        const sector = m[1], numero = m[2];
+        const arr = lotesData[sector];
+        if (!arr) return null;
+        return arr.find(l => l.numero === numero);
+      }
+
+      function style(feature) {
+        const lote = findLoteInfo(feature.properties.id);
+        const estado = lote ? lote.estado : "Desconocido";
+        return {
+          color: "#333", weight: 1,
+          fillColor: getColor(estado, feature.properties.id),
+          fillOpacity: 0.6
+        };
+      }
+
+      function onEachFeature(feature, layer) {
+        layer.on({
+          mouseover: e => {
+            e.target.setStyle({ weight: 3, color: "#000" });
+            const id = feature.properties.id;
+            if (id.includes("ProximaEtapa")) {
+              infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`);
+            } else {
+              const idNice = id.replace(/_/g, " ");
+              const lote = findLoteInfo(id);
+              if (lote) {
+                infoControl.update(`
+                  <div><strong>${idNice}</strong></div>
+                  <div>Estado: ${lote.estado}</div>
+                  <div>Superficie: ${lote.superficie} m²</div>
+                `);
+              } else {
+                infoControl.update(`Sin datos en JSON</div>`, $idNice);
+              }
+            }
+          },
+          mouseout: e => {
+            geojson.resetStyle(e.target);
+            infoControl.update();
+          },
+          click: e => {
+            const id = feature.properties.id;
+            if (id.includes("ProximaEtapa")) {
+              infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo</div>`);
+              return;
+            }
+            const idNice = id.replace(/_/g, " ");
+            const lote = findLoteInfo(id);
+            if (lote) {
+              infoControl.update(`
+                <div><strong>Estado:</strong> ${lote.estado}</div>
+                <div><strong>Superficie:</strong> ${lote.superficie} m²</div>
+                <div><strong>Plan 60:</strong> Entrega de ${lote.plan60_entrega_inicial} <br> + 60 cuotas de ${lote.plan60_cuotas}</div>
+                <div><strong>Precio final Plan 60:</strong> ${lote.plan60_precio_final}</div>
+                <div><strong>Plan 36:</strong> Entrega de ${lote.plan36_entrega_inicial} <br> + 36 cuotas de ${lote.plan36_cuotas}</div>
+                <div><strong>Precio final Plan 36:</strong> ${lote.plan36_precio_final}</div>
+                <div><strong>Precio de contado:</strong> ${lote.precio_contado}</div>
+              `, idNice);
+            } else {
+              infoControl.update(`<div><strong>${idNice}</strong><br>Sin datos en JSON</div>`);
+            }
+          }
+        });
+      }
+
+      geojson = L.geoJson(geoData, { style, onEachFeature }).addTo(map);
+      geojson.setZIndex(10);
+    })
+    .catch(err => console.error("❌ Error cargando datos:", err));
+  </script>
+</body>
+</html>
