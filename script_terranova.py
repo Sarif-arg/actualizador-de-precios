@@ -12,15 +12,15 @@ creds_dict = json.loads(creds_json)  # convertir string JSON en dict
 gc = gspread.service_account_from_dict(creds_dict)
 
 # Abrir planilla por ID
-sh = gc.open_by_key("1faQLs3WhxNTeC1wmDi4Y9kD6ktnqPNeTO5h3ITzlaeg")
+sh = gc.open_by_key("1LgEsuOrtTwbpckNV3JPpDKR9xejNyPv-ul5EM9lisNw")
 
 # Hojas válidas
 valid_sheets = [
-    "Manzana A", "Manzana B", "Manzana C", "A4",
-    "B1", "B2", "B3", "B4",
-    "C1", "C2", "C3",
-    "D1", "D2",
-    "L1", "L2"
+    "Manzana A", "Manzana B", "Manzana C", "Manzana D",
+    "Manzana E", "Manzana F", "Manzana G", "Manzana H",
+    "Manzana I", "Manzana J", "Manzana K", "Manzana L",
+    "Manzana M", "Manzana N", "Manzana O", "Manzana P",
+    "Manzana Q",
 ]
 
 column_names = [
@@ -29,12 +29,12 @@ column_names = [
     "largo",
     "superficie",
     "precio_contado",
-    "plan36_entrega_inicial",
-    "plan36_cuotas",
-    "plan36_precio_final",
-    "plan60_entrega_inicial",
-    "plan60_cuotas",
-    "plan60_precio_final",
+    "plan1_entrega_inicial",
+    "plan1_cuotas",
+    "plan1_precio_final",
+    "plan2_entrega_inicial",
+    "plan2_cuotas",
+    "plan2_precio_final",
     "fecha_entrega",
     "estado"
 ]
@@ -52,7 +52,7 @@ for sheet_name in valid_sheets:
 
     data[sheet_name] = parsed
 
-output_path = os.path.join(os.path.dirname(__file__), "datos.json")
+output_path = os.path.join(os.path.dirname(__file__), "datos_terranova.json")
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 

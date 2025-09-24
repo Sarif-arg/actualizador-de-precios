@@ -88,7 +88,7 @@
     // Carga de datos
     Promise.all([
       fetch("portofino.geojson").then(r => r.json()),
-      fetch("datos.json").then(r => r.json())
+      fetch("datos_portofino.json").then(r => r.json())
     ])
     .then(([geoData, lotesData]) => {
       function findLoteInfo(geoId) {
