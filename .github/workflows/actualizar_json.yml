@@ -28,7 +28,7 @@ jobs:
         run: pip install gspread pandas oauth2client
 
       - name: Ejecutar script Python
-        run: python script.py
+        run: python script_portofino.py
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
 
