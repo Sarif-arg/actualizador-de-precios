@@ -60,7 +60,7 @@
 
     async function cargarDatos() {
       try {
-        const response = await fetch("datos.json");
+        const response = await fetch("datos_portofino.json");
         const data = await response.json();
 
         const acordeonesContainer = document.getElementById("acordeones");
