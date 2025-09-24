@@ -27,10 +27,15 @@ jobs:
       - name: Instalar dependencias
         run: pip install gspread pandas oauth2client
 
-      - name: Ejecutar script Python
+      - name: Ejecutar script Portofino
         run: python script_portofino.py
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
+
+      - name: Ejecutar script Terranova
+        run: python script_terranova.py
+        env:
+          GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}    
 
       - name: Configurar Git
         run: |
