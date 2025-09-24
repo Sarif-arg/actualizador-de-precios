@@ -93,10 +93,10 @@
     .then(([geoData, lotesData]) => {
       function findLoteInfo(geoId) {
         if (geoId.includes("ProximaEtapa")) return null;
-        const m = geoId.match(/Sector_(\w+)_Lote_(\d+)/);
+        const m = geoId.match(/Manzana_(\w+)_Lote_(\d+)/);
         if (!m) return null;
-        const sector = m[1], numero = m[2];
-        const arr = lotesData[sector];
+        const manzana = m[1], numero = m[2];
+        const arr = lotesData[manzana];
         if (!arr) return null;
         return arr.find(l => l.numero === numero);
       }
