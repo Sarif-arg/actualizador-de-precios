@@ -46,21 +46,22 @@
 
     const map = L.map("map", { crs: L.CRS.Simple, minZoom: -2 }).fitBounds(bounds);
 
-    // Fondo (no interactivo)
+    // Fondo SVG (solo imagen, no interactivo)
     L.imageOverlay("plano_terranova_base.svg", bounds, { interactive:false, zIndex:1 }).addTo(map);
 
-    // Colores por estado (+ ProximaEtapa)
-    function getColor(estado, id) {
-      if (id.includes("ProximaEtapa")) return "#333";
+    // Colores por estado
+    function getColor(estado) {
       switch (estado) {
         case "Disponible": return "#55d400";
         case "Reservado":  return "#ffd93b";
         case "Vendido":    return "#d40000";
         case "Reventa":    return "#0066ff";
+        case "No disponible": return "#333";
+        default: return "#ccc";
       }
     }
 
-    // Controles
+    // Panel de información
     const infoControl = L.control({ position: "topright" });
     infoControl.onAdd = function() {
       this._div = L.DomUtil.create("div", "info-panel leaflet-control");
@@ -72,6 +73,7 @@
     };
     infoControl.addTo(map);
 
+    // Leyenda
     const legend = L.control({ position: "bottomright" });
     legend.onAdd = function() {
       const div = L.DomUtil.create("div", "legend leaflet-control");
@@ -80,6 +82,7 @@
         <div><i style="background:#ffd93b"></i> Reservado</div>
         <div><i style="background:#d40000"></i> Vendido</div>
         <div><i style="background:#0066ff"></i> Reventa</div>
+        <div><i style="background:#333"></i> Próxima etapa</div>
       `;
       return div;
     };
@@ -92,11 +95,12 @@
     ])
     .then(([geoData, lotesData]) => {
       function findLoteInfo(geoId) {
-        if (geoId.includes("ProximaEtapa")) return null;
-        const m = geoId.match(/Manzana_(\w+)_Lote_(\d+)/);
+        // Normalizar ID: Manzana_X_Lote_Y
+        const m = geoId.match(/Manzana_(\w+)_Lote_(\d+)/i);
         if (!m) return null;
-        const manzana = m[1], numero = m[2];
-        const arr = lotesData[manzana];
+        const sector = "Manzana " + m[1].toUpperCase(); // Sector en JSON está con letra mayúscula
+        const numero = m[2];
+        const arr = lotesData[sector];
         if (!arr) return null;
         return arr.find(l => l.numero === numero);
       }
@@ -105,8 +109,9 @@
         const lote = findLoteInfo(feature.properties.id);
         const estado = lote ? lote.estado : "Desconocido";
         return {
-          color: "#333", weight: 1,
-          fillColor: getColor(estado, feature.properties.id),
+          color: "#333",
+          weight: 1,
+          fillColor: getColor(estado),
           fillOpacity: 0.6
         };
       }
@@ -115,21 +120,22 @@
         layer.on({
           mouseover: e => {
             e.target.setStyle({ weight: 3, color: "#000" });
-            const id = feature.properties.id;
-            if (id.includes("ProximaEtapa")) {
-              infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`);
+            const id = feature.properties.id.replace(/_/g, " ");
+            const lote = findLoteInfo(feature.properties.id);
+
+            if (!lote) {
+              infoControl.update(`<div><strong>${id}</strong><br>Sin datos en JSON</div>`);
+            } else if (lote.estado === "No disponible") {
+              infoControl.update(
+                `<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`,
+                "Próxima Etapa"
+              );
             } else {
-              const idNice = id.replace(/_/g, " ");
-              const lote = findLoteInfo(id);
-              if (lote) {
-                infoControl.update(`
-                  <div><strong>${idNice}</strong></div>
-                  <div>Estado: ${lote.estado}</div>
-                  <div>Superficie: ${lote.superficie} m²</div>
-                `);
-              } else {
-                infoControl.update(`Sin datos en JSON</div>`, $idNice);
-              }
+              infoControl.update(`
+                <div><strong>${id}</strong></div>
+                <div>Estado: ${lote.estado}</div>
+                <div>Superficie: ${lote.superficie} m²</div>
+              `, "Información del lote");
             }
           },
           mouseout: e => {
@@ -137,26 +143,50 @@
             infoControl.update();
           },
           click: e => {
-            const id = feature.properties.id;
-            if (id.includes("ProximaEtapa")) {
-              infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo</div>`);
+            const id = feature.properties.id.replace(/_/g, " ");
+            const lote = findLoteInfo(feature.properties.id);
+
+            if (!lote) {
+              infoControl.update(`<div><strong>${id}</strong><br>Sin datos en JSON</div>`);
               return;
             }
-            const idNice = id.replace(/_/g, " ");
-            const lote = findLoteInfo(id);
-            if (lote) {
-              infoControl.update(`
-                <div><strong>Estado:</strong> ${lote.estado}</div>
-                <div><strong>Superficie:</strong> ${lote.superficie} m²</div>
-                <div><strong>Plan 60:</strong> Entrega de ${lote.plan60_entrega_inicial} <br> + 60 cuotas de ${lote.plan60_cuotas}</div>
-                <div><strong>Precio final Plan 60:</strong> ${lote.plan60_precio_final}</div>
-                <div><strong>Plan 36:</strong> Entrega de ${lote.plan36_entrega_inicial} <br> + 36 cuotas de ${lote.plan36_cuotas}</div>
-                <div><strong>Precio final Plan 36:</strong> ${lote.plan36_precio_final}</div>
-                <div><strong>Precio de contado:</strong> ${lote.precio_contado}</div>
-              `, idNice);
-            } else {
-              infoControl.update(`<div><strong>${idNice}</strong><br>Sin datos en JSON</div>`);
+            if (lote.estado === "No disponible") {
+              infoControl.update(
+                `<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`,
+                "Próxima Etapa"
+              );
+              return;
             }
+
+            // Info del lote
+            let html = `
+              <div><strong>Estado:</strong> ${lote.estado}</div>
+              <div><strong>Superficie:</strong> ${lote.superficie} m²</div>
+              <div><strong>Precio de contado:</strong> ${lote.precio_contado}</div>
+            `;
+
+            if (lote.estado === "Reventa") {
+              html += `<div><em>Este lote se vende únicamente de contado.</em></div>`;
+            } else {
+              const esInmediata = lote.fecha_entrega === "Inmediata";
+              const plan1Label = esInmediata ? "36" : "48";
+              const plan2Label = esInmediata ? "48" : "72";
+
+              if (lote.plan1_entrega_inicial) {
+                html += `
+                  <div><strong>Plan ${plan1Label}:</strong> Entrega de ${lote.plan1_entrega_inicial} <br> + ${plan1Label} cuotas de ${lote.plan1_cuotas}</div>
+                  <div><strong>Precio final Plan ${plan1Label}:</strong> ${lote.plan1_precio_final}</div>
+                `;
+              }
+              if (lote.plan2_entrega_inicial) {
+                html += `
+                  <div><strong>Plan ${plan2Label}:</strong> Entrega de ${lote.plan2_entrega_inicial} <br> + ${plan2Label} cuotas de ${lote.plan2_cuotas}</div>
+                  <div><strong>Precio final Plan ${plan2Label}:</strong> ${lote.plan2_precio_final}</div>
+                `;
+              }
+            }
+
+            infoControl.update(html, id);
           }
         });
       }
