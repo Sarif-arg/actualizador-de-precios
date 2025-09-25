@@ -96,7 +96,7 @@
     .then(([geoData, lotesData]) => {
       function findLoteInfo(geoId) {
         // Normalizar ID: Manzana_X_Lote_Y
-        const m = geoId.match(/Manzana_(\w+)_Lote_(\d+)/i);
+        const m = geoId.match(/Manzana_(\w+)_Lote_(\d+[a-zA-Z]?)/i)
         if (!m) return null;
         const sector = "Manzana " + m[1].toUpperCase(); // Sector en JSON está con letra mayúscula
         const numero = m[2];
@@ -124,7 +124,7 @@
             const lote = findLoteInfo(feature.properties.id);
 
             if (!lote) {
-              infoControl.update(`<div><strong>${id}</strong><br>Sin datos en JSON</div>`);
+              infoControl.update(`<div><strong>${id}</strong><br>Sin datos del Terreno</div>`);
             } else if (lote.estado === "No disponible") {
               infoControl.update(
                 `<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`,
