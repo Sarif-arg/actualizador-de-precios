@@ -159,11 +159,9 @@
 
             // Info del lote
             let html = `
-              <div><strong>Estado:</strong> ${lote.estado}</div>
-              <div><strong>Superficie:</strong> ${lote.superficie} m² (${lote.frente} x ${lote.largo} m)</div>
-              <div><strong>Fecha de entrega:</strong> ${lote.fecha_entrega}</div>
-              <div><strong>Precio de contado:</strong> ${lote.precio_contado}</div>
-            `;
+                <div><strong>${id}</strong></div>
+                <div>Estado: ${lote.estado}</div>
+              `;
 
             if (lote.estado === "Reventa") {
               html += `<div><em>Este lote se vende únicamente de contado.</em></div>`;
