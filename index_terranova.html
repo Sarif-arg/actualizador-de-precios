@@ -127,7 +127,7 @@
               infoControl.update(`<div><strong>${id}</strong><br>Sin datos del Terreno</div>`);
             } else if (lote.estado === "No disponible") {
               infoControl.update(
-                `<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`,
+                `<div><strong>No disponible</strong><br>Lote de la próxima etapa del loteo.</div>`,
                 "Próxima Etapa"
               );
             } else {
@@ -146,12 +146,12 @@
             const lote = findLoteInfo(feature.properties.id);
 
             if (!lote) {
-              infoControl.update(`<div><strong>${id}</strong><br>Sin datos en JSON</div>`);
+              infoControl.update(`<div><strong>${id}</strong><br>Sin datos del Terreno</div>`);
               return;
             }
             if (lote.estado === "No Disponible") {
               infoControl.update(
-                `<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`,
+                `<div><strong>No disponible</strong><br>Lote de la próxima etapa del loteo.</div>`,
                 "Próxima Etapa"
               );
               return;
@@ -160,7 +160,7 @@
             // Info del lote
             let html = `
               <div><strong>Estado:</strong> ${lote.estado}</div>
-              <div><strong>Superficie:</strong> ${lote.superficie} m² (${lote.frente} x ${lote.largo})</div>
+              <div><strong>Superficie:</strong> ${lote.superficie} m² (${lote.frente} x ${lote.largo} m)</div>
               <div><strong>Fecha de entrega:</strong> ${lote.fecha_entrega}</div>
               <div><strong>Precio de contado:</strong> ${lote.precio_contado}</div>
             `;
