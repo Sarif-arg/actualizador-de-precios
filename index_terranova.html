@@ -134,7 +134,6 @@
               infoControl.update(`
                 <div><strong>${id}</strong></div>
                 <div>Estado: ${lote.estado}</div>
-                <div>Superficie: ${lote.superficie} m²</div>
               `, "Información del lote");
             }
           },
@@ -150,7 +149,7 @@
               infoControl.update(`<div><strong>${id}</strong><br>Sin datos en JSON</div>`);
               return;
             }
-            if (lote.estado === "No disponible") {
+            if (lote.estado === "No Disponible") {
               infoControl.update(
                 `<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`,
                 "Próxima Etapa"
@@ -161,7 +160,8 @@
             // Info del lote
             let html = `
               <div><strong>Estado:</strong> ${lote.estado}</div>
-              <div><strong>Superficie:</strong> ${lote.superficie} m²</div>
+              <div><strong>Superficie:</strong> ${lote.superficie} m² (${lote.frente} x ${lote.largo})</div>
+              <div><strong>Fecha de entrega:</strong> ${lote.fecha_entrega}</div>
               <div><strong>Precio de contado:</strong> ${lote.precio_contado}</div>
             `;
 
