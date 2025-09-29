@@ -12,10 +12,20 @@ on:
     - cron: "0 22 * * *"   # 19:00 Buenos Aires → Portofino
     - cron: "30 22 * * *"  # 19:30 Buenos Aires → Terranova
   workflow_dispatch:
+    inputs:
+      barrio:
+        description: "¿Qué barrio querés actualizar?"
+        required: true
+        default: "Ambos"
+        type: choice
+        options:
+          - Portofino
+          - Terranova
+          - Ambos
 
 jobs:
   portofino:
-    if: github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *'
+    if: github.event_name == 'schedule' && (github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Portofino' || github.event.inputs.barrio == 'Ambos')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repo
@@ -48,7 +58,7 @@ jobs:
           git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
 
   terranova:
-    if: github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *'
+    if: github.event_name == 'schedule' && (github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Terranova' || github.event.inputs.barrio == 'Ambos')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repo
@@ -79,6 +89,7 @@ jobs:
           git add .
           git commit -m "Actualización automática de precios Terranova" || echo "No hay cambios"
           git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
+
 
           git add .
           git commit -m "Actualización automática de precios" || echo "No hay cambios para commitear"
