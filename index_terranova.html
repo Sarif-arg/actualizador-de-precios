@@ -134,6 +134,7 @@
               infoControl.update(`
                 <div><strong>${id}</strong></div>
                 <div>Estado: ${lote.estado}</div>
+                <div>Superficie: ${lote.superficie} m² (${lote.frente}m x ${lote.largo}m) </div>
               `, "Información del lote");
             }
           },
@@ -161,6 +162,8 @@
             let html = `
                 <div><strong>${id}</strong></div>
                 <div>Estado: ${lote.estado}</div>
+                <div>Superficie: ${lote.superficie} m² (${lote.frente}m x ${lote.largo}m) </div>
+                <div>Precio de lista: ${lote.precio_contado}</div>
               `;
 
             if (lote.estado === "Reventa") {
