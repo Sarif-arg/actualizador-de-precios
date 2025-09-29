@@ -1,20 +1,22 @@
 name: Actualizar JSON desde Google Sheets
 
 permissions:
-  contents: write  # Necesario para poder hacer push
+  contents: write
   actions: read
   checks: read
 
 on:
   schedule:
-    - cron: "0 10 * * *"   # 07:00 Buenos Aires
-    - cron: "0 22 * * *"   # 19:00 Buenos Aires
-  workflow_dispatch:     # Permite correrlo manualmente
+    - cron: "0 10 * * *"   # 07:00 Buenos Aires → Portofino
+    - cron: "30 10 * * *"  # 07:30 Buenos Aires → Terranova
+    - cron: "0 22 * * *"   # 19:00 Buenos Aires → Portofino
+    - cron: "30 22 * * *"  # 19:30 Buenos Aires → Terranova
+  workflow_dispatch:
 
 jobs:
-  build:
+  portofino:
+    if: github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout del repo
         uses: actions/checkout@v3
@@ -32,10 +34,38 @@ jobs:
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
 
+      - name: Configurar Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit y Push cambios
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git add .
+          git commit -m "Actualización automática de precios Portofino" || echo "No hay cambios"
+          git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
+
+  terranova:
+    if: github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repo
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependencias
+        run: pip install gspread pandas oauth2client
+
       - name: Ejecutar script Terranova
         run: python script_terranova.py
         env:
-          GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}    
+          GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
 
       - name: Configurar Git
         run: |
@@ -46,6 +76,10 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
+          git add .
+          git commit -m "Actualización automática de precios Terranova" || echo "No hay cambios"
+          git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
+
           git add .
           git commit -m "Actualización automática de precios" || echo "No hay cambios para commitear"
           git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
