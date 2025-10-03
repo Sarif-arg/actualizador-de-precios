@@ -44,13 +44,13 @@ Actualmente soporta dos barrios:
 
 📌 Estados posibles:
 
-Disponible
+- Disponible
 
-Vendido
+- Vendido
 
-Reservado
+- Reservado
 
-No disponible (próxima etapa)
+- No disponible (próxima etapa)
 
 ### Terranova (`datos_terranova.json`)
 ```json
