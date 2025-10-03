@@ -24,9 +24,9 @@ on:
           - Ambos
 
 jobs:
-  portofino:
-    if: github.event_name == 'schedule' && (github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Portofino' || github.event.inputs.barrio == 'Ambos')
+  actualizar:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout del repo
         uses: actions/checkout@v3
@@ -39,40 +39,18 @@ jobs:
       - name: Instalar dependencias
         run: pip install gspread pandas oauth2client
 
-      - name: Ejecutar script Portofino
+      - name: Ejecutar Portofino
+        if: github.event_name == 'schedule' && (github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Portofino' || github.event.inputs.barrio == 'Ambos')
         run: python script_portofino.py
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
 
-      - name: Configurar Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Esperar 60 segundos si es Ambos
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.barrio == 'Ambos'
+        run: sleep 60
 
-      - name: Commit y Push cambios
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git add .
-          git commit -m "Actualización automática de precios Portofino" || echo "No hay cambios"
-          git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
-
-  terranova:
-    if: github.event_name == 'schedule' && (github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Terranova' || github.event.inputs.barrio == 'Ambos')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout del repo
-        uses: actions/checkout@v3
-
-      - name: Configurar Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Instalar dependencias
-        run: pip install gspread pandas oauth2client
-
-      - name: Ejecutar script Terranova
+      - name: Ejecutar Terranova
+        if: github.event_name == 'schedule' && (github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Terranova' || github.event.inputs.barrio == 'Ambos')
         run: python script_terranova.py
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
@@ -87,10 +65,5 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git add .
-          git commit -m "Actualización automática de precios Terranova" || echo "No hay cambios"
-          git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
-
-
-          git add .
-          git commit -m "Actualización automática de precios" || echo "No hay cambios para commitear"
+          git commit -m "Actualización automática de precios" || echo "No hay cambios"
           git push https://x-access-token:${GH_PAT}@github.com/Sarif-arg/actualizador-de-precios.git HEAD:main
