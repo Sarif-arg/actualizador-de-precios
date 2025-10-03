@@ -40,6 +40,7 @@ Actualmente soporta dos barrios:
     }
   ]
 }
+```
 
 📌 Estados posibles:
 
