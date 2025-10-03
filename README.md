@@ -9,7 +9,7 @@ Actualmente soporta dos barrios:
 
 ---
 
-## ⚙️ Flujo de trabajo
+## Flujo de trabajo
 
 ```text
 +------------------+       +----------------------+       +-------------------+
@@ -19,7 +19,8 @@ Actualmente soporta dos barrios:
                                    v                              v
                              GitHub Actions                 Frontend Leaflet
 ```
-## 📂 Estructura de los JSON
+---
+## Estructura de los JSON
 
 ### Portofino (`datos_portofino.json`)
 ```json
@@ -41,8 +42,8 @@ Actualmente soporta dos barrios:
   ]
 }
 ```
-
-## Estados posibles:
+---
+### Estados posibles:
 - Disponible
 - Vendido
 - Reservado
@@ -70,18 +71,18 @@ Actualmente soporta dos barrios:
   ]
 }
 ```
-Estados posibles:
+### Estados posibles:
 + Disponible → verde
 + Vendido → rojo
 + Reservado → amarillo
 + No disponible → gris (próxima etapa)
 + Reventa → azul (solo contado, sin financiación)
 
-Planes:
+### Planes:
 + Si fecha_entrega = Inmediata → planes 36 y 48 cuotas.
 + Si fecha_entrega ≠ Inmediata → planes 48 y 72 cuotas.
 + Si estado = Reventa → solo contado.
-
+---
 ## ⏱️ Cron y Workflows
 
 El proyecto actualiza automáticamente los archivos `datos_portofino.json` y `datos_terranova.json` desde Google Sheets usando **GitHub Actions**.
@@ -95,7 +96,7 @@ El proyecto actualiza automáticamente los archivos `datos_portofino.json` y `da
   - Todos los días a las **07:30** y **19:30** (hora Buenos Aires, GMT-3).  
 
 Esto permite evitar el límite de lectura de Google Sheets (error 429 por demasiadas requests).
-
+---
 ## 🗺️ Frontend
 
 - Los JSON generados son consumidos por un frontend hecho en Leaflet que:
