@@ -19,7 +19,9 @@ Actualmente soporta dos barrios:
                                    v                              v
                              GitHub Actions                 Frontend Leaflet
 ```
+
 ---
+
 ## Estructura de los JSON
 
 ### Portofino (`datos_portofino.json`)
@@ -42,7 +44,9 @@ Actualmente soporta dos barrios:
   ]
 }
 ```
+
 ---
+
 ### Estados posibles:
 - Disponible
 - Vendido
@@ -82,7 +86,9 @@ Actualmente soporta dos barrios:
 + Si fecha_entrega = Inmediata → planes 36 y 48 cuotas.
 + Si fecha_entrega ≠ Inmediata → planes 48 y 72 cuotas.
 + Si estado = Reventa → solo contado.
+
 ---
+
 ## ⏱️ Cron y Workflows
 
 El proyecto actualiza automáticamente los archivos `datos_portofino.json` y `datos_terranova.json` desde Google Sheets usando **GitHub Actions**.
@@ -96,8 +102,10 @@ El proyecto actualiza automáticamente los archivos `datos_portofino.json` y `da
   - Todos los días a las **07:30** y **19:30** (hora Buenos Aires, GMT-3).  
 
 Esto permite evitar el límite de lectura de Google Sheets (error 429 por demasiadas requests).
+
 ---
-## 🗺️ Frontend
+
+## Frontend
 
 - Los JSON generados son consumidos por un frontend hecho en Leaflet que:
 - Carga el GeoJSON con los lotes.
@@ -106,7 +114,9 @@ Esto permite evitar el límite de lectura de Google Sheets (error 429 por demasi
 - Incluye leyenda de colores fija en la esquina inferior derecha.
 - Usa el SVG original como fondo y el GeoJSON encima, para mantener fidelidad visual.
 
-## 🚀 Cómo correr manualmente
+---
+
+## Cómo correr manualmente
 
 - Ir a la pestaña Actions en GitHub.
 - Seleccionar el workflow Actualizar JSON desde Google Sheets.
