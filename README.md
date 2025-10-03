@@ -43,13 +43,9 @@ Actualmente soporta dos barrios:
 ```
 
 📌 Estados posibles:
-
 - Disponible
-
 - Vendido
-
 - Reservado
-
 - No disponible (próxima etapa)
 
 ### Terranova (`datos_terranova.json`)
@@ -73,26 +69,18 @@ Actualmente soporta dos barrios:
     }
   ]
 }
-
+```
 📌 Estados posibles:
-
-Disponible → verde
-
-Vendido → rojo
-
-Reservado → amarillo
-
-No disponible → gris (próxima etapa)
-
-Reventa → azul (solo contado, sin financiación)
++ Disponible → verde
++ Vendido → rojo
++ Reservado → amarillo
++ No disponible → gris (próxima etapa)
++ Reventa → azul (solo contado, sin financiación)
 
 📌 Planes:
-
-Si fecha_entrega = Inmediata → planes 36 y 48 cuotas.
-
-Si fecha_entrega ≠ Inmediata → planes 48 y 72 cuotas.
-
-Si estado = Reventa → solo contado.
++ Si fecha_entrega = Inmediata → planes 36 y 48 cuotas.
++ Si fecha_entrega ≠ Inmediata → planes 48 y 72 cuotas.
++ Si estado = Reventa → solo contado.
 
 ## ⏱️ Cron y Workflows
 
