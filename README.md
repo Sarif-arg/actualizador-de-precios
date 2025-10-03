@@ -1,22 +1,27 @@
-# 📘 Manual Técnico – Actualizador de Precios
+# 🏡 Actualizador de precios - Almirón Propiedades  
 
-## 1. Descripción del proyecto
+Este repositorio automatiza la actualización de precios e información de lotes en distintos barrios, a partir de datos cargados en **Google Sheets**, y genera archivos **JSON** que luego son consumidos por el frontend (Leaflet + GeoJSON).  
 
-Este repositorio automatiza la actualización de precios de lotes de **Portofino** (y eventualmente otros desarrollos).
+Actualmente soporta dos barrios:  
 
-El flujo es:
-* Un script en Python + GSpread lee los datos del Excel en Google Drive.
-* Se genera un archivo `datos.json` estructurado por sectores.
-* Un workflow de **GitHub Actions** actualiza automáticamente el repo con ese JSON todos los días.
-* Un HTML con acordeones animados y tablas responsive consume `datos.json` y muestra la información en la web.
+- **Portofino**  
+- **Terranova**  
 
 ---
 
-## 2. Estructura del JSON
+## ⚙️ Flujo de trabajo
 
-Cada sector (ejemplo A1, A2, …) contiene una lista de lotes.
-Ejemplo:
+```text
++------------------+       +----------------------+       +-------------------+
+|  Google Sheets   | ----> |  Script Python (CI)  | ----> |  datos_xxx.json   |
++------------------+       +----------------------+       +-------------------+
+                                   |                              |
+                                   v                              v
+                             GitHub Actions                 Frontend Leaflet
 
+## 📂 Estructura de los JSON
+
+### Portofino (`datos_portofino.json`)
 ```json
 {
   "A1": [
@@ -33,62 +38,95 @@ Ejemplo:
       "fecha_entrega": "abril 2029",
       "estado": "Disponible"
     }
-  ]}
-```
+  ]
+}
 
----
+📌 Estados posibles:
 
-## 3. Frontend (HTML + JS + Tailwind)
+Disponible
 
-* Cada sector se renderiza en un acordeón.
-* Los lotes se muestran en una tabla.
-* El estado colorea toda la fila:
-* Verde pastel → Disponible
-* Amarillo pastel → Reservado
-* Rojo pastel → Vendido
-* Responsive
-* En pantallas chicas (<760px), las tablas se transforman en cards:
-* Cada fila pasa a ocupar un bloque con etiquetas tipo “N°”, “Superficie”, etc.
-* Esto evita el scroll horizontal.
+Vendido
 
----
+Reservado
 
-## 4. Workflow en GitHub Actions
+No disponible (próxima etapa)
 
-* Archivo: .github/workflows/update.yml
-* Corre todos los días a las 03:00 UTC.
-* Instala dependencias, ejecuta el script y hace commit automático.
-* Usa un PAT (Personal Access Token) guardado en GH_PAT.
+### Terranova (`datos_terranova.json`)
+```json
+{
+  "Manzana A": [
+    {
+      "numero": "1",
+      "frente": "20",
+      "largo": "50",
+      "superficie": "1000",
+      "precio_contado": "USD 100.000",
+      "plan1_entrega_inicial": "USD 44.000",
+      "plan1_cuotas": "USD 1.833",
+      "plan1_precio_final": "USD 110.000",
+      "plan2_entrega_inicial": "",
+      "plan2_cuotas": "",
+      "plan2_precio_final": "",
+      "fecha_entrega": "Inmediata",
+      "estado": "Vendido"
+    }
+  ]
+}
 
----
+📌 Estados posibles:
 
-## 5. Cómo ejecutar manualmente
+Disponible → verde
 
-* Si querés correrlo en tu máquina local:
-* python obtener_precios.py
-* Esto genera datos.json en el directorio del script.
-* Luego:
-* git add datos.json
-* git commit -m "Actualización manual"
-* git push origin main
+Vendido → rojo
 
----
+Reservado → amarillo
 
-## 6. Archivos principales
+No disponible → gris (próxima etapa)
 
-* obtener_precios.py → Script que lee Google Sheets y genera datos.json.
-* datos.json → Archivo actualizado con la info de precios.
-* index.html → Interfaz web con acordeones y tablas responsive.
-* .github/workflows/update.yml → Automatización de GitHub Actions.
+Reventa → azul (solo contado, sin financiación)
 
----
+📌 Planes:
 
-## 7. Mantenimiento futuro
+Si fecha_entrega = Inmediata → planes 36 y 48 cuotas.
 
-* Si se agrega otro loteo:
-* Crear nueva hoja en Google Drive.
-* Ajustar el script para parsear ese loteo.
-* El JSON tendrá nuevas claves (Portofino, OtroLoteo, etc.).
-* El HTML leerá dinámicamente cada proyecto.
+Si fecha_entrega ≠ Inmediata → planes 48 y 72 cuotas.
 
----
+Si estado = Reventa → solo contado.
+
+## ⏱️ Cron y Workflows
+
+El proyecto actualiza automáticamente los archivos `datos_portofino.json` y `datos_terranova.json` desde Google Sheets usando **GitHub Actions**.
+
+### Programación de Cron
+
+- **Portofino**:  
+  - Todos los días a las **07:00** y **19:00** (hora Buenos Aires, GMT-3).  
+
+- **Terranova**:  
+  - Todos los días a las **07:30** y **19:30** (hora Buenos Aires, GMT-3).  
+
+Esto permite evitar el límite de lectura de Google Sheets (error 429 por demasiadas requests).
+
+## 🗺️ Frontend
+
+Los JSON generados son consumidos por un frontend hecho en Leaflet que:
+
+Carga el GeoJSON con los lotes.
+
+Cruza la info con datos_portofino.json o datos_terranova.json.
+
+Muestra la información de cada lote en un panel lateral fijo.
+
+Incluye leyenda de colores fija en la esquina inferior derecha.
+
+Usa el SVG original como fondo y el GeoJSON encima, para mantener fidelidad visual.
+
+## 🚀 Cómo correr manualmente
+
+Ir a la pestaña Actions en GitHub.
+
+Seleccionar el workflow Actualizar JSON desde Google Sheets.
+
+Click en Run workflow.
+
+Elegir Portofino, Terranova o Ambos.
