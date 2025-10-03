@@ -1,4 +1,4 @@
-# 🏡 Actualizador de precios - Almirón Propiedades  
+# Actualizador de precios - Almirón Propiedades  
 
 Este repositorio automatiza la actualización de precios e información de lotes en distintos barrios, a partir de datos cargados en **Google Sheets**, y genera archivos **JSON** que luego son consumidos por el frontend (Leaflet + GeoJSON).  
 
@@ -18,7 +18,7 @@ Actualmente soporta dos barrios:
                                    |                              |
                                    v                              v
                              GitHub Actions                 Frontend Leaflet
-
+```
 ## 📂 Estructura de los JSON
 
 ### Portofino (`datos_portofino.json`)
@@ -42,7 +42,7 @@ Actualmente soporta dos barrios:
 }
 ```
 
-📌 Estados posibles:
+## Estados posibles:
 - Disponible
 - Vendido
 - Reservado
@@ -70,14 +70,14 @@ Actualmente soporta dos barrios:
   ]
 }
 ```
-📌 Estados posibles:
+Estados posibles:
 + Disponible → verde
 + Vendido → rojo
 + Reservado → amarillo
 + No disponible → gris (próxima etapa)
 + Reventa → azul (solo contado, sin financiación)
 
-📌 Planes:
+Planes:
 + Si fecha_entrega = Inmediata → planes 36 y 48 cuotas.
 + Si fecha_entrega ≠ Inmediata → planes 48 y 72 cuotas.
 + Si estado = Reventa → solo contado.
@@ -98,24 +98,16 @@ Esto permite evitar el límite de lectura de Google Sheets (error 429 por demasi
 
 ## 🗺️ Frontend
 
-Los JSON generados son consumidos por un frontend hecho en Leaflet que:
-
-Carga el GeoJSON con los lotes.
-
-Cruza la info con datos_portofino.json o datos_terranova.json.
-
-Muestra la información de cada lote en un panel lateral fijo.
-
-Incluye leyenda de colores fija en la esquina inferior derecha.
-
-Usa el SVG original como fondo y el GeoJSON encima, para mantener fidelidad visual.
+- Los JSON generados son consumidos por un frontend hecho en Leaflet que:
+- Carga el GeoJSON con los lotes.
+- Cruza la info con datos_portofino.json o datos_terranova.json.
+- Muestra la información de cada lote en un panel lateral fijo.
+- Incluye leyenda de colores fija en la esquina inferior derecha.
+- Usa el SVG original como fondo y el GeoJSON encima, para mantener fidelidad visual.
 
 ## 🚀 Cómo correr manualmente
 
-Ir a la pestaña Actions en GitHub.
-
-Seleccionar el workflow Actualizar JSON desde Google Sheets.
-
-Click en Run workflow.
-
-Elegir Portofino, Terranova o Ambos.
+- Ir a la pestaña Actions en GitHub.
+- Seleccionar el workflow Actualizar JSON desde Google Sheets.
+- Click en Run workflow.
+- Elegir Portofino, Terranova o Ambos.
