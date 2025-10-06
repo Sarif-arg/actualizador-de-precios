@@ -5530,15 +5530,15 @@
       "frente": "10",
       "largo": "25",
       "superficie": "250",
-      "precio_contado": "",
-      "plan1_entrega_inicial": "",
-      "plan1_cuotas": "",
-      "plan1_precio_final": "",
-      "plan2_entrega_inicial": "",
-      "plan2_cuotas": "",
-      "plan2_precio_final": "",
+      "precio_contado": "USD 20.000",
+      "plan1_entrega_inicial": "USD 8.600",
+      "plan1_cuotas": "USD 310",
+      "plan1_precio_final": "USD 23.480",
+      "plan2_entrega_inicial": "USD 9.400",
+      "plan2_cuotas": "USD 250",
+      "plan2_precio_final": "27400",
       "fecha_entrega": "9/2026",
-      "estado": "Vendido"
+      "estado": "Disponible"
     },
     {
       "numero": "9",
