@@ -4062,7 +4062,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Vendido"
     },
     {
       "numero": "23",
@@ -5416,7 +5416,7 @@
       "plan2_cuotas": "USD 438",
       "plan2_precio_final": "USD 30.000",
       "fecha_entrega": "Inmediata",
-      "estado": "Reservado"
+      "estado": "Vendido"
     }
   ],
   "Manzana K": [
@@ -5868,7 +5868,7 @@
       "plan2_cuotas": "USD 267",
       "plan2_precio_final": "USD 30.440",
       "fecha_entrega": "9/2026",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "31",
