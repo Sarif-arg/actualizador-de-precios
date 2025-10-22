@@ -153,7 +153,10 @@
     const originalWidth = 2000, originalHeight = 2828.5715;
     const bounds = [[0,0], [originalHeight, originalWidth]];
 
-    const map = L.map("map", { crs: L.CRS.Simple, minZoom: -2 }).fitBounds(bounds);
+    const map = L.map("map", {
+  preferCanvas: false, // 🔸 importante: desactiva canvas
+  renderer: L.svg(),   // 🔸 fuerza render en SVG
+});
 
     // Fondo SVG (solo imagen, no interactivo)
     L.imageOverlay("plano_terranova_base.svg", bounds, { interactive:false, zIndex:1 }).addTo(map);
