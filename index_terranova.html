@@ -88,45 +88,65 @@
     }
   </style>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <script>
-    const { jsPDF } = window.jspdf;
+<script>
+  const { jsPDF } = window.jspdf;
 
-    document.getElementById("btnComercial").addEventListener("click", async () => {
-      const mapContainer = document.getElementById("map");
+  document.getElementById("btnComercial").addEventListener("click", async () => {
+    const mapContainer = document.getElementById("map");
 
-      // Ocultamos los popups y elementos interactivos
-      const popups = document.querySelectorAll(".leaflet-popup, .leaflet-control-container");
-      popups.forEach(el => el.style.display = "none");
+    // Ocultamos popups y controles para la captura
+    const controls = document.querySelectorAll(".leaflet-popup, .leaflet-control-container");
+    controls.forEach(el => (el.style.display = "none"));
 
-      // Tomamos screenshot del mapa
-      const canvas = await html2canvas(mapContainer, {
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        scale: 1
-      });
+    // Forzamos el mapa a un tamaño estable (como si fuera una hoja A4)
+    const originalWidth = mapContainer.offsetWidth;
+    const originalHeight = mapContainer.offsetHeight;
 
-      // Restauramos visibilidad
-      popups.forEach(el => el.style.display = "");
+    // Dimensiones A4 en píxeles aprox (a 96 DPI)
+    const targetWidth = 794; // 21 cm
+    const targetHeight = 1123; // 29,7 cm
 
-      // Creamos el PDF en orientación vertical
-      const imgData = canvas.toDataURL("image/jpeg", 1.0);
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "px",
-        format: [canvas.width, canvas.height]
-      });
+    mapContainer.style.width = `${targetWidth}px`;
+    mapContainer.style.height = `${targetHeight}px`;
 
-      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
-      pdf.save("Plano_Terranova_Comercial.pdf");
+    // Leaflet necesita actualizar el layout
+    if (window.map) map.invalidateSize();
+
+    // Esperamos a que todo se re-renderice
+    await new Promise(res => setTimeout(res, 800));
+
+    // Capturamos el mapa
+    const canvas = await html2canvas(mapContainer, {
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      scale: 2
     });
 
-    document.getElementById("btnMensura").addEventListener("click", () => {
-      window.open("https://sarif-arg.github.io/plano_terranova_mensura.pdf", "_blank");
+    // Restauramos el tamaño original
+    mapContainer.style.width = `${originalWidth}px`;
+    mapContainer.style.height = `${originalHeight}px`;
+    if (window.map) map.invalidateSize();
+    controls.forEach(el => (el.style.display = ""));
+
+    // Convertimos a PDF A4 vertical
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [targetWidth, targetHeight]
     });
-  </script>
+
+    pdf.addImage(imgData, "JPEG", 0, 0, targetWidth, targetHeight);
+    pdf.save("Plano_Terranova_Comercial.pdf");
+  });
+
+  document.getElementById("btnMensura").addEventListener("click", () => {
+    window.open("https://sarif-arg.github.io/plano_terranova_mensura.pdf", "_blank");
+  });
+</script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
