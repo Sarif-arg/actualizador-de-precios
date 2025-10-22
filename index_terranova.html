@@ -38,6 +38,95 @@
 </head>
 <body>
   <div id="map"></div>
+    <!-- Botones de descarga -->
+  <div class="download-buttons">
+    <button id="btnComercial">📄 Descargar plano comercial</button>
+    <button id="btnMensura">📐 Descargar plano con mensura</button>
+  </div>
+
+  <style>
+    .download-buttons {
+      width: 95vw;
+      margin: 10px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: nowrap;
+      z-index: 9999;
+      position: relative;
+    }
+
+    .download-buttons button {
+      background: #0066ff;
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,.2);
+      transition: all 0.25s ease;
+    }
+
+    .download-buttons button:hover {
+      background: #0050cc;
+      transform: translateY(-2px);
+    }
+
+    .download-buttons button:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    }
+
+    @media (max-width: 600px) {
+      .download-buttons button {
+        font-size: 14px;
+        padding: 9px 12px;
+      }
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    document.getElementById("btnComercial").addEventListener("click", async () => {
+      const mapContainer = document.getElementById("map");
+
+      // Ocultamos los popups y elementos interactivos
+      const popups = document.querySelectorAll(".leaflet-popup, .leaflet-control-container");
+      popups.forEach(el => el.style.display = "none");
+
+      // Tomamos screenshot del mapa
+      const canvas = await html2canvas(mapContainer, {
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        scale: 2
+      });
+
+      // Restauramos visibilidad
+      popups.forEach(el => el.style.display = "");
+
+      // Creamos el PDF en orientación vertical
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
+      pdf.save("Plano_Terranova_Comercial.pdf");
+    });
+
+    document.getElementById("btnMensura").addEventListener("click", () => {
+      window.open("https://sarif-arg.github.io/plano_terranova_mensura.pdf", "_blank");
+    });
+  </script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
