@@ -116,7 +116,7 @@
     if (window.map) map.invalidateSize();
 
     // Esperamos a que todo se re-renderice
-    await new Promise(res => setTimeout(res, 800));
+    await new Promise(res => setTimeout(res, 1500));
 
     // Capturamos el mapa
     const canvas = await html2canvas(mapContainer, {
