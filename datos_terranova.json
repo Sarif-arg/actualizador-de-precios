@@ -4174,7 +4174,7 @@
       "frente": "10",
       "largo": "25",
       "superficie": "250",
-      "precio_contado": "",
+      "precio_contado": "USD 22.000",
       "plan1_entrega_inicial": "",
       "plan1_cuotas": "",
       "plan1_precio_final": "",
@@ -4182,7 +4182,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Vendido"
+      "estado": "Reventa"
     },
     {
       "numero": "31",
@@ -4581,7 +4581,7 @@
       "frente": "10",
       "largo": "25",
       "superficie": "250",
-      "precio_contado": "",
+      "precio_contado": "USD 20.000",
       "plan1_entrega_inicial": "",
       "plan1_cuotas": "",
       "plan1_precio_final": "",
@@ -4589,7 +4589,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Vendido"
+      "estado": "Reventa"
     },
     {
       "numero": "19",
