@@ -5808,7 +5808,7 @@
       "plan2_cuotas": "USD 256",
       "plan2_precio_final": "USD 27.400",
       "fecha_entrega": "9/2026",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "27",
@@ -5868,7 +5868,7 @@
       "plan2_cuotas": "USD 267",
       "plan2_precio_final": "USD 30.440",
       "fecha_entrega": "9/2026",
-      "estado": "Reservado"
+      "estado": "Vendido"
     },
     {
       "numero": "31",
