@@ -537,7 +537,7 @@
       "plan60_cuotas": "USD 316,24",
       "plan60_precio_final": "USD 27.106,00",
       "fecha_entrega": "abril 2029",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "6",
@@ -550,7 +550,7 @@
       "plan60_cuotas": "USD 316,24",
       "plan60_precio_final": "USD 27.106,00",
       "fecha_entrega": "abril 2029",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "7",
@@ -825,7 +825,7 @@
       "plan60_cuotas": "USD 501,67",
       "plan60_precio_final": "USD 43.000,00",
       "fecha_entrega": "abril 2029",
-      "estado": "Vendido"
+      "estado": "Disponible"
     },
     {
       "numero": "2",
