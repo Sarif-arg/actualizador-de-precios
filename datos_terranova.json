@@ -1082,7 +1082,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reservado"
+      "estado": "Vendido"
     },
     {
       "numero": "20",
@@ -6652,7 +6652,7 @@
       "plan2_cuotas": "USD 287,50",
       "plan2_precio_final": "USD 27.300,00",
       "fecha_entrega": "Inmediata",
-      "estado": "Reservado"
+      "estado": "Vendido"
     },
     {
       "numero": "13",
@@ -7903,7 +7903,7 @@
       "plan2_cuotas": "USD 287,50",
       "plan2_precio_final": "USD 27.300,00",
       "fecha_entrega": "Inmediata",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "27",
