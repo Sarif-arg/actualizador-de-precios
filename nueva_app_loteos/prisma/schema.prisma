@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  engineType    = "binary"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String   // Ej. Portofino, Terranova
+  svgContent  String?  // SVG crudo (como string)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lots        Lot[]
+}
+
+model Lot {
+  id                 String   @id @default(uuid())
+  projectId          String
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Elementos del SVG y posición lógica
+  svgPathId          String   // El ID interno del <path> o <polygon> en el SVG
+  sector             String   // Ej. Manzana A, Sector A1
+  numero             String   // Ej. 1, 2, 3
+
+  // Datos comerciales y financieros (opcionales para el MVP)
+  estado             String   @default("Disponible") // Disponible, Reservado, Vendido, ProximaEtapa
+  superficie         String?
+  precio_contado     String?
+  fecha_entrega      String?
+
+  // Planes
+  plan1_nombre       String?  // Ej. "Plan 36 cuotas" o "Plan 1"
+  plan1_entrega      String?
+  plan1_cuotas       String?
+  plan1_precio_final String?
+
+  plan2_nombre       String?  // Ej. "Plan 60 cuotas" o "Plan 2"
+  plan2_entrega      String?
+  plan2_cuotas       String?
+  plan2_precio_final String?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([projectId, svgPathId])
+}
