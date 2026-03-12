@@ -9,19 +9,22 @@ on:
   schedule:
     - cron: "0 10 * * *"   # 07:00 Buenos Aires → Portofino
     - cron: "30 10 * * *"  # 07:30 Buenos Aires → Terranova
+    - cron: "45 10 * * *"  # 07:45 Buenos Aires → Portofino Lanzamiento
     - cron: "0 22 * * *"   # 19:00 Buenos Aires → Portofino
     - cron: "30 22 * * *"  # 19:30 Buenos Aires → Terranova
+    - cron: "45 22 * * *"  # 19:45 Buenos Aires → Portofino Lanzamiento
   workflow_dispatch:
     inputs:
       barrio:
         description: "¿Qué barrio querés actualizar?"
         required: true
-        default: "Ambos"
+        default: "Todos"
         type: choice
         options:
           - Portofino
+          - Portofino Lanzamiento
           - Terranova
-          - Ambos
+          - Todos
 
 jobs:
   actualizar:
@@ -40,20 +43,30 @@ jobs:
         run: pip install gspread pandas oauth2client
 
       - name: Ejecutar Portofino
-        if: github.event_name == 'schedule' && (github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Portofino' || github.event.inputs.barrio == 'Ambos')
+        if: github.event_name == 'schedule' && (github.event.schedule == '0 10 * * *' || github.event.schedule == '0 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Portofino' || github.event.inputs.barrio == 'Todos')
         run: python script_portofino.py
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
 
-      - name: Esperar 60 segundos si es Ambos
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.barrio == 'Ambos'
+      - name: Esperar 60 segundos si es Todos (1/2)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.barrio == 'Todos'
         run: sleep 60
 
       - name: Ejecutar Terranova
-        if: github.event_name == 'schedule' && (github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Terranova' || github.event.inputs.barrio == 'Ambos')
+        if: github.event_name == 'schedule' && (github.event.schedule == '30 10 * * *' || github.event.schedule == '30 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Terranova' || github.event.inputs.barrio == 'Todos')
         run: python script_terranova.py
         env:
           GOOGLE_CREDENTIALS_ACTUALIZADOR: ${{ secrets.GOOGLE_CREDENTIALS_ACTUALIZADOR }}
+
+      - name: Esperar 60 segundos si es Todos (2/2)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.barrio == 'Todos'
+        run: sleep 60
+
+      - name: Ejecutar Portofino Lanzamiento
+        if: github.event_name == 'schedule' && (github.event.schedule == '45 10 * * *' || github.event.schedule == '45 22 * * *') || github.event_name == 'workflow_dispatch' && (github.event.inputs.barrio == 'Portofino Lanzamiento' || github.event.inputs.barrio == 'Todos')
+        run: python script_portofino_lanzamiento.py
+        env:
+          GOOGLE_CREDENTIALS_PORTOFINO_LANZAMIENTO: ${{ secrets.GOOGLE_CREDENTIALS_PORTOFINO_LANZAMIENTO }}
 
       - name: Configurar Git
         run: |
