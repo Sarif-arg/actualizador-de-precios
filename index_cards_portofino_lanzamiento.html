@@ -10,12 +10,17 @@
   <div class="max-w-3xl mx-auto space-y-4">
     <header class="bg-white rounded-2xl shadow p-4">
       <h1 class="text-2xl font-bold">Filtro inteligente</h1>
-      <p class="text-sm text-slate-600">Encontrá tu lote perfecto</p>
+      <p class="text-sm text-slate-600">Encontra tu lote perfecto</p>
     </header>
 
     <section class="bg-white rounded-2xl shadow p-4 space-y-3">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input id="searchInput" type="text" placeholder="Ingresa sector o lote" class="w-full border rounded-lg px-3 py-2 text-sm"/>
+      <div class="grid grid-cols-1 gap-3">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Busca por ejemplo: sector A1, lote 4, A1 o 4"
+          class="w-full border rounded-lg px-3 py-2 text-sm"
+        />
       </div>
 
       <div class="space-y-2">
@@ -27,7 +32,7 @@
       </div>
 
       <div class="space-y-2">
-        <div class="text-xs font-semibold text-slate-500">Elegí tu financiación:</div>
+        <div class="text-xs font-semibold text-slate-500">Elegi tu financiacion:</div>
         <div class="radio-input">
           <label><input type="radio" name="plan-radio" data-plan="12"><span>12 cuotas</span></label>
           <label><input type="radio" name="plan-radio" data-plan="24"><span>24 cuotas</span></label>
@@ -39,13 +44,24 @@
       </div>
 
       <div class="space-y-2">
-        <div class="text-xs font-semibold text-slate-500" id="precioLabel">Precio máximo: USD -</div>
-        <div class="range-wrap"><input id="precioMax" type="range" min="0" max="100" value="100" class="range"/></div>
+        <div class="text-xs font-semibold text-slate-500" id="precioLabel">Filtro de Precio de Lista: USD -</div>
+        <div class="range-wrap">
+          <input id="precioMax" type="range" min="0" max="100" value="100" class="range" />
+        </div>
       </div>
-      <div class="flex flex-wrap gap-2"><button class="chip chip-gray" id="clearFilters">Limpiar</button></div>
+
+      <div class="flex flex-wrap gap-2">
+        <button class="chip chip-gray" id="clearFilters">Limpiar</button>
+      </div>
     </section>
 
-    <section id="cardsContainer" class="space-y-3"></section>
+    <section class="space-y-2">
+      <div id="resultsInfo" class="text-xs text-slate-500"></div>
+      <div id="cardsContainer" class="space-y-3"></div>
+      <div class="text-center">
+        <button id="showMoreBtn" class="chip chip-gray hidden">Mostrar mas</button>
+      </div>
+    </section>
   </div>
 
   <style>
@@ -93,10 +109,8 @@
       border-radius: 9999px;
       background: transparent;
     }
-    .radio-input input {
-      display: none;
-    }
 
+    .radio-input input { display: none; }
     .radio-input {
       --container_width: 100%;
       --sel: 5;
@@ -110,7 +124,6 @@
       overflow: hidden;
       border: 1px solid rgba(53, 52, 52, 0.226);
     }
-
     .radio-input label {
       width: calc(var(--container_width) / 5);
       padding: 10px;
@@ -123,7 +136,6 @@
       letter-spacing: -0.5px;
       font-size: 13px;
     }
-
     .selection {
       position: absolute;
       height: 100%;
@@ -135,11 +147,7 @@
       background-color: #dbeafe;
       border-radius: 9999px;
     }
-
-    .radio-input label:has(input:checked) {
-      color: #1d4ed8;
-    }
-
+    .radio-input label:has(input:checked) { color: #1d4ed8; }
     .radio-input label:nth-child(1):has(input:checked) ~ .selection { --sel: 1; }
     .radio-input label:nth-child(2):has(input:checked) ~ .selection { --sel: 2; }
     .radio-input label:nth-child(3):has(input:checked) ~ .selection { --sel: 3; }
@@ -149,6 +157,8 @@
 
   <script>
     const cardsContainer = document.getElementById("cardsContainer");
+    const resultsInfo = document.getElementById("resultsInfo");
+    const showMoreBtn = document.getElementById("showMoreBtn");
     const searchInput = document.getElementById("searchInput");
     const clearFilters = document.getElementById("clearFilters");
     const toggleDisponibles = document.getElementById("toggleDisponibles");
@@ -156,9 +166,13 @@
     const precioMax = document.getElementById("precioMax");
     const precioLabel = document.getElementById("precioLabel");
     const planButtons = Array.from(document.querySelectorAll(".radio-input input[data-plan]"));
+
     let allItems = [];
+    let filteredItems = [];
     let planFilters = new Set(["60"]);
     let maxPrecio = 0;
+    let visibleCount = 4;
+    const STEP_RESULTS = 4;
 
     function parsePrecio(value) {
       if (!value) return 0;
@@ -177,19 +191,68 @@
       return value.toString().replace(/,\d{2}\b/g, "").replace(/\.00\b/g, "");
     }
 
-    function renderCards(items) {
+    function formatUsd(value) {
+      const clean = formatMoney(value || "");
+      if (!clean) return "";
+      if (/^USD/i.test(clean)) return clean;
+      return `USD ${clean}`;
+    }
+
+    function normalize(text) {
+      return (text || "")
+        .toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function matchesQuery(item, query) {
+      if (!query) return true;
+      const searchable = normalize(`sector ${item.sector} lote ${item.numero} ${item.sector} ${item.numero}`);
+      const tokens = query.split(/\s+/).filter(Boolean);
+      return tokens.every((token) => searchable.includes(token));
+    }
+
+    function buildCuotasHtml(item) {
+      const cuotaDefs = [
+        ["12", item.cuotas_plan_12],
+        ["24", item.cuotas_plan_24],
+        ["36", item.cuotas_plan_36],
+        ["48", item.cuotas_plan_48],
+        ["60", item.cuotas_plan_60]
+      ];
+      return cuotaDefs
+        .filter(([, val]) => !!(val && val.toString().trim()))
+        .map(([plan, val]) => `<div class="text-sm"><strong>${plan} cuotas de:</strong> ${formatUsd(val)}</div>`)
+        .join("");
+    }
+
+    function buildRefuerzoHtml(item) {
+      const has60 = !!(item.cuotas_plan_60 && item.cuotas_plan_60.toString().trim());
+      const refuerzo = has60 ? item.plan_60_refuerzo_aguinaldo : item.plan_48_refuerzo_aguinaldo;
+      if (!refuerzo || !refuerzo.toString().trim()) return "";
+      const label = has60 ? "Refuerzo plan 60" : "Refuerzo plan 48";
+      return `<div class="text-sm"><strong>${label}:</strong> ${formatUsd(refuerzo)}</div>`;
+    }
+
+    function renderCards() {
       cardsContainer.innerHTML = "";
-      if (items.length === 0) {
+      if (filteredItems.length === 0) {
         cardsContainer.innerHTML = "<div class='text-sm text-slate-500'>Sin resultados.</div>";
+        resultsInfo.textContent = "Mostrando 0 resultados.";
+        showMoreBtn.classList.add("hidden");
         return;
       }
-      items.forEach(item => {
-        const estado = (item.estado || "").toLowerCase();
-        const has12 = !!(item.cuotas_plan_12 && item.cuotas_plan_12);
-        const has24 = !!(item.cuotas_plan_24 && item.cuotas_plan_24);
-        const has36 = !!(item.cuotas_plan_36 && item.cuotas_plan_36);
-        const has48 = !!(item.cuotas_plan_48 && item.cuotas_plan_48);
-        const has60 = !!(item.cuotas_plan_60 && item.cuotas_plan_60);
+
+      const visibleItems = filteredItems.slice(0, visibleCount);
+      visibleItems.forEach((item) => {
+        const estado = normalize(item.estado);
+        const has12 = !!(item.cuotas_plan_12 && item.cuotas_plan_12.toString().trim());
+        const has24 = !!(item.cuotas_plan_24 && item.cuotas_plan_24.toString().trim());
+        const has36 = !!(item.cuotas_plan_36 && item.cuotas_plan_36.toString().trim());
+        const has48 = !!(item.cuotas_plan_48 && item.cuotas_plan_48.toString().trim());
+        const has60 = !!(item.cuotas_plan_60 && item.cuotas_plan_60.toString().trim());
         const estadoClass = estado ? `estado-${estado}` : "chip-gray";
         const card = document.createElement("div");
         card.className = "bg-white rounded-2xl shadow p-4 space-y-2";
@@ -198,15 +261,12 @@
             <div class="font-semibold">Sector ${item.sector} - Lote ${item.numero}</div>
             <span class="chip ${estadoClass}">${item.estado || "Sin estado"}</span>
           </div>
-          <div class="text-sm text-slate-600">Superficie: ${item.superficie || ""} m²</div>
-          <div class="text-sm"><strong>Precio lista:</strong> ${formatMoney(item.precio_lista || "")}</div>
-          <div class="text-sm"><strong>Entrega inicial:</strong> ${formatMoney(item.entrega_inicial || "")}</div>
+          <div class="text-sm text-slate-600">Superficie: ${item.superficie || ""} m2</div>
+          <div class="text-sm"><strong>Precio lista:</strong> ${formatUsd(item.precio_lista || "")}</div>
+          <div class="text-sm"><strong>Entrega inicial:</strong> ${formatUsd(item.entrega_inicial || "")}</div>
           <div class="text-sm"><strong>Entrega:</strong> ${item.fecha_entrega || ""}</div>
-          <div class="text-sm"><strong>12 cuotas de:</strong> ${formatMoney(item.cuotas_plan_12 || "No posee")}</div>
-          <div class="text-sm"><strong>24 cuotas de:</strong> ${formatMoney(item.cuotas_plan_24 || "No posee")}</div>
-          <div class="text-sm"><strong>36 cuotas de:</strong> ${formatMoney(item.cuotas_plan_36 || "No posee")}</div>
-          <div class="text-sm"><strong>48 cuotas de:</strong> ${formatMoney(item.cuotas_plan_48 || "No posee")}</div>
-          <div class="text-sm"><strong>60 cuotas de:</strong> ${formatMoney(item.cuotas_plan_60 || "No posee")}</div>
+          ${buildCuotasHtml(item)}
+          ${buildRefuerzoHtml(item)}
           <div class="flex flex-wrap gap-2 text-xs">
             <span class="chip ${has12 ? "chip-green" : "chip-red"}">12</span>
             <span class="chip ${has24 ? "chip-green" : "chip-red"}">24</span>
@@ -217,85 +277,129 @@
         `;
         cardsContainer.appendChild(card);
       });
+
+      resultsInfo.textContent = `Mostrando ${visibleItems.length} de ${filteredItems.length} resultados.`;
+      if (visibleCount < filteredItems.length) {
+        showMoreBtn.classList.remove("hidden");
+      } else {
+        showMoreBtn.classList.add("hidden");
+      }
     }
 
     function applyFilters() {
-      const search = searchInput.value.trim().toLowerCase();
+      const query = normalize(searchInput.value);
       const showDisponibles = toggleDisponibles.classList.contains("on");
       const showNoDisponibles = toggleNoDisponibles.classList.contains("on");
       const max = Number(precioMax.value);
-      let items = allItems.filter(item => {
-        const hay = `${item.sector} ${item.numero}`.toLowerCase();
-        if (search && !hay.includes(search)) return false;
-        const estado = (item.estado || "").toLowerCase();
+
+      filteredItems = allItems.filter((item) => {
+        if (!matchesQuery(item, query)) return false;
+
+        const estado = normalize(item.estado);
         const isDisponible = estado === "disponible";
         const isNoDisponible = estado === "reservado" || estado === "vendido";
         if (!showDisponibles && isDisponible) return false;
         if (!showNoDisponibles && isNoDisponible) return false;
+
         if (planFilters.size > 0) {
           for (const plan of planFilters) {
-            if (plan === "60") {
-              if (!(item.cuotas_plan_60 && item.cuotas_plan_60.trim())) return false;
-            } else {
-              const key = `cuotas_plan_${plan}`;
-              if (!(item[key] && item[key].toString().trim())) return false;
-            }
+            const key = `cuotas_plan_${plan}`;
+            if (!(item[key] && item[key].toString().trim())) return false;
           }
         }
+
         if (item.precio_num > max) return false;
         return true;
       });
-      renderCards(items);
+
+      visibleCount = Math.min(visibleCount, Math.max(STEP_RESULTS, filteredItems.length));
+      renderCards();
+    }
+
+    function resetVisibleCount() {
+      visibleCount = STEP_RESULTS;
+    }
+
+    function updateRangeVisual() {
+      const max = Number(precioMax.max) || 1;
+      const val = Number(precioMax.value) || 0;
+      const pct = Math.min(100, Math.max(0, (val / max) * 100));
+      precioMax.style.background = `linear-gradient(90deg, #dbeafe ${pct}%, #e5e7eb ${pct}%)`;
     }
 
     toggleDisponibles.addEventListener("click", () => {
       toggleDisponibles.classList.toggle("on");
-      applyFilters();
-    });
-    toggleNoDisponibles.addEventListener("click", () => {
-      toggleNoDisponibles.classList.toggle("on");
+      resetVisibleCount();
       applyFilters();
     });
 
-    planButtons.forEach(input => {
+    toggleNoDisponibles.addEventListener("click", () => {
+      toggleNoDisponibles.classList.toggle("on");
+      resetVisibleCount();
+      applyFilters();
+    });
+
+    planButtons.forEach((input) => {
       input.addEventListener("change", () => {
-        const plan = input.dataset.plan;
-        planFilters = new Set([plan]);
+        planFilters = new Set([input.dataset.plan]);
+        resetVisibleCount();
         applyFilters();
       });
     });
 
     precioMax.addEventListener("input", () => {
-      precioLabel.textContent = `Precio máximo: USD ${precioMax.value.toLocaleString("es-AR")}`;
+      precioLabel.textContent = `Filtro de Precio de Lista: USD ${Number(precioMax.value).toLocaleString("es-AR")}`;
+      updateRangeVisual();
+      resetVisibleCount();
       applyFilters();
     });
+
+    searchInput.addEventListener("input", () => {
+      resetVisibleCount();
+      applyFilters();
+    });
+
     clearFilters.addEventListener("click", () => {
       planFilters = new Set(["60"]);
-      planButtons.forEach(i => { i.checked = i.dataset.plan === "60"; });
+      planButtons.forEach((i) => {
+        i.checked = i.dataset.plan === "60";
+      });
       toggleDisponibles.classList.add("on");
       toggleNoDisponibles.classList.remove("on");
       searchInput.value = "";
       precioMax.value = maxPrecio;
-      precioLabel.textContent = `Precio máximo: USD ${maxPrecio.toLocaleString("es-AR")}`;
+      precioLabel.textContent = `Filtro de Precio de Lista: USD ${maxPrecio.toLocaleString("es-AR")}`;
+      updateRangeVisual();
+      resetVisibleCount();
       applyFilters();
     });
-    searchInput.addEventListener("input", applyFilters);
+
+    showMoreBtn.addEventListener("click", () => {
+      visibleCount += STEP_RESULTS;
+      renderCards();
+    });
 
     async function loadData() {
       const response = await fetch("datos_portofino_lanzamiento.json");
       const data = await response.json();
       const items = [];
       for (const [sector, lotes] of Object.entries(data)) {
-        lotes.forEach(lote => {
+        lotes.forEach((lote) => {
           const precio_num = parsePrecio(lote.precio_lista || "");
           items.push({ ...lote, sector, precio_num });
         });
       }
+
       allItems = items;
-      maxPrecio = Math.max(...allItems.map(i => i.precio_num || 0), 0);
+      maxPrecio = Math.max(...allItems.map((i) => i.precio_num || 0), 0);
       precioMax.max = maxPrecio;
       precioMax.value = maxPrecio;
-      precioLabel.textContent = `Precio máximo: USD ${maxPrecio.toLocaleString("es-AR")}`;
+      precioLabel.textContent = `Filtro de Precio de Lista: USD ${maxPrecio.toLocaleString("es-AR")}`;
+      updateRangeVisual();
+
+      const checkedPlan = document.querySelector(".radio-input input[data-plan]:checked");
+      planFilters = new Set([checkedPlan ? checkedPlan.dataset.plan : "60"]);
+      resetVisibleCount();
       applyFilters();
     }
 
@@ -303,25 +407,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
