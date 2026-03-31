@@ -130,13 +130,15 @@
         const has36 = !!(lote.cuotas_plan_36 && lote.cuotas_plan_36.trim());
         const has48 = !!(lote.cuotas_plan_48 && lote.cuotas_plan_48.trim());
         const has60 = !!(lote.cuotas_plan_60 && lote.cuotas_plan_60.trim());
+        const chips = [];
+        if (has12) chips.push(`<span class="chip green">12</span>`);
+        if (has24) chips.push(`<span class="chip green">24</span>`);
+        if (has36) chips.push(`<span class="chip green">36</span>`);
+        if (has48) chips.push(`<span class="chip green">48</span>`);
+        if (has60) chips.push(`<span class="chip green">60</span>`);
         return `
           <div class="chips-row">
-            <span class="chip ${has12 ? "green" : "red"}">12</span>
-            <span class="chip ${has24 ? "green" : "red"}">24</span>
-            <span class="chip ${has36 ? "green" : "red"}">36</span>
-            <span class="chip ${has48 ? "green" : "red"}">48</span>
-            <span class="chip ${has60 ? "green" : "red"}">60</span>
+            ${chips.join("")}
           </div>
         `;
       }
@@ -212,6 +214,8 @@
               if (estadoLower === "vendido" || estadoLower === "reservado") {
                 return;
               }
+              const has60 = !!(lote.cuotas_plan_60 && lote.cuotas_plan_60.trim());
+              const refuerzoLabel = has60 ? "Refuerzo plan 60" : "Refuerzo plan 48";
               infoControl.update(`
                 <div class="${blockClass(lote.estado)}">
                   <div class="title">${idNice}</div>
@@ -229,7 +233,7 @@
                   <div><strong>Plan 36:</strong> ${formatMoney(lote.cuotas_plan_36 || "")}</div>
                   <div><strong>Plan 48:</strong> ${formatMoney(lote.cuotas_plan_48 || "")}</div>
                   ${lote.cuotas_plan_60 ? `<div><strong>Plan 60:</strong> ${formatMoney(lote.cuotas_plan_60)}</div>` : ""}
-                  <div><strong>Refuerzo:</strong> ${formatMoney(lote.plan_60_refuerzo_aguinaldo || lote.plan_48_refuerzo_aguinaldo || "")}</div>
+                  <div><strong>${refuerzoLabel}:</strong> ${formatMoney(lote.plan_60_refuerzo_aguinaldo || lote.plan_48_refuerzo_aguinaldo || "")}</div>
                 </div>
               `);
             } else {
