@@ -12,8 +12,8 @@
     .info-panel.leaflet-control,
     .legend.leaflet-control {
       background: rgba(255,255,255,0.9);
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+      border-radius: 3px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
       font-family: system-ui, sans-serif;
       color: #333;
     }
@@ -37,7 +37,7 @@
     .custom-popup .leaflet-popup-content-wrapper {
       background: rgba(255,255,255,0.8);
       backdrop-filter: blur(6px);
-      border-radius: 12px;
+      border-radius: 3px;
       box-shadow: 0 8px 20px rgba(0,0,0,.25);
       padding: 10px; animation: fadeInUp .3s ease-out;
     }
@@ -45,6 +45,11 @@
     .popup-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #333; }
     .popup-info { font-size: .9rem; color: #444; line-height: 1.3; }
     @keyframes fadeInUp { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: none;} }
+
+    @media (max-width: 768px) {
+      .info-panel.leaflet-control { max-width: min(86vw, 320px); }
+      .legend.leaflet-control { font-size: 12px; line-height: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -52,22 +57,24 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const originalWidth = 3000, originalHeight = 1053;
-    const bounds = [[0,0], [originalHeight, originalWidth]];
+    const originalWidth = 3000;
+    const originalHeight = 1053;
+    const bounds = [[0, 0], [originalHeight, originalWidth]];
 
     const map = L.map("map", { crs: L.CRS.Simple, minZoom: -2 }).fitBounds(bounds);
+    let geojson;
 
     // Fondo (no interactivo)
-    L.imageOverlay("plano_portofino_lanzamiento.svg", bounds, { interactive:false, zIndex:1 }).addTo(map);
+    L.imageOverlay("plano_portofino_lanzamiento.svg", bounds, { interactive: false, zIndex: 1 }).addTo(map);
 
     // Colores por estado (+ ProximaEtapa)
     function getColor(estado, id) {
       if (id.includes("ProximaEtapa")) return "#333";
       switch ((estado || "").toLowerCase()) {
         case "disponible": return "#55d400";
-        case "reservado":  return "#ffd93b";
-        case "vendido":    return "#d40000";
-        default:           return "#cccccc";
+        case "reservado": return "#ffd93b";
+        case "vendido": return "#d40000";
+        default: return "#cccccc";
       }
     }
 
@@ -78,175 +85,216 @@
       this.update();
       return this._div;
     };
-    // Render del panel con transicion
-    infoControl.update = function(html, title = "Informacion del lote") {
+
+    infoControl.update = function(html, title = "Información del lote") {
       const content = html || "Seleccione un lote";
       this._div.innerHTML = `<h4>${title}</h4><div class="fade-in">${content}</div>`;
     };
     infoControl.addTo(map);
 
-    const legend = L.control({ position: "bottomright" });
-    legend.onAdd = function() {
-      const div = L.DomUtil.create("div", "legend leaflet-control");
-      div.innerHTML = `
-        <div><i style="background:#55d400"></i> Disponible</div>
-        <div><i style="background:#ffd93b"></i> Reservado</div>
-        <div><i style="background:#d40000"></i> Vendido</div>
-        <div><i style="background:#999"></i> Próxima etapa</div>
-      `;
-      return div;
-    };
+    function isLowResolution() {
+      return window.matchMedia("(max-width: 1024px), (max-height: 720px)").matches;
+    }
+
+    function createLegend(position) {
+      const control = L.control({ position });
+      control.onAdd = function() {
+        const div = L.DomUtil.create("div", "legend leaflet-control");
+        div.innerHTML = `
+          <div><i style="background:#55d400"></i> Disponible</div>
+          <div><i style="background:#ffd93b"></i> Reservado</div>
+          <div><i style="background:#d40000"></i> Vendido</div>
+          <div><i style="background:#999"></i> Próxima etapa</div>
+        `;
+        return div;
+      };
+      return control;
+    }
+
+    let legendPosition = isLowResolution() ? "bottomleft" : "bottomright";
+    let legend = createLegend(legendPosition);
     legend.addTo(map);
+
+    window.addEventListener("resize", () => {
+      const next = isLowResolution() ? "bottomleft" : "bottomright";
+      if (next !== legendPosition) {
+        map.removeControl(legend);
+        legend = createLegend(next);
+        legend.addTo(map);
+        legendPosition = next;
+      }
+    });
 
     // Carga de datos (geojson + tabla)
     Promise.all([
       fetch("portofino_lanzamiento.geojson").then(r => r.json()),
       fetch("datos_portofino_lanzamiento.json").then(r => r.json())
     ])
-        .then(([geoData, lotesData]) => {
-      // Quita centavos
-      function formatMoney(value) {
-        if (!value) return "";
-        return value.toString().replace(/,\d{2}\b/g, "").replace(/\.00\b/g, "");
-      }
+      .then(([geoData, lotesData]) => {
+        function escapeHtml(value) {
+          return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
 
-      // Chip visual segun estado
-      function estadoChip(estado) {
-        const e = (estado || "").toLowerCase();
-        if (e === "disponible") return `<span class="chip green">Disponible</span>`;
-        if (e === "reservado") return `<span class="chip yellow">Reservado</span>`;
-        if (e === "vendido") return `<span class="chip red">Vendido</span>`;
-        return `<span class="chip">Sin estado</span>`;
-      }
+        // Quita centavos
+        function formatMoney(value) {
+          if (!value) return "";
+          return value.toString().replace(/,\d{2}\b/g, "").replace(/\.00\b/g, "");
+        }
 
-      // Resalta bloque si disponible
-      function blockClass(estado) {
-        return (estado || "").toLowerCase() === "disponible" ? "block available" : "block";
-      }
-      // Chips de financiacion
-      function financiacionChips(lote) {
-        const has12 = !!(lote.cuotas_plan_12 && lote.cuotas_plan_12.trim());
-        const has24 = !!(lote.cuotas_plan_24 && lote.cuotas_plan_24.trim());
-        const has36 = !!(lote.cuotas_plan_36 && lote.cuotas_plan_36.trim());
-        const has48 = !!(lote.cuotas_plan_48 && lote.cuotas_plan_48.trim());
-        const has60 = !!(lote.cuotas_plan_60 && lote.cuotas_plan_60.trim());
-        const chips = [];
-        if (has12) chips.push(`<span class="chip green">12</span>`);
-        if (has24) chips.push(`<span class="chip green">24</span>`);
-        if (has36) chips.push(`<span class="chip green">36</span>`);
-        if (has48) chips.push(`<span class="chip green">48</span>`);
-        if (has60) chips.push(`<span class="chip green">60</span>`);
-        return `
-          <div class="chips-row">
-            ${chips.join("")}
-          </div>
-        `;
-      }
-      // Mapea ID del geojson a datos
-      function findLoteInfo(geoId) {
-        if (geoId.includes("ProximaEtapa")) return null;
-        const m = geoId.match(/Sector_([A-Za-z0-9.]+)_Lote_(\d+)/);
-        if (!m) return null;
-        const sector = m[1], numero = m[2];
-        const arr = lotesData[sector];
-        if (!arr) return null;
-        return arr.find(l => l.numero === numero);
-      }
+        function safeMoney(value) {
+          return escapeHtml(formatMoney(value));
+        }
 
-      // Estilo del poligono segun estado
-      function style(feature) {
-        const lote = findLoteInfo(feature.properties.id);
-        const estado = lote ? lote.estado : "Desconocido";
-        return {
-          color: "#333", weight: 1,
-          fillColor: getColor(estado, feature.properties.id),
-          fillOpacity: 0.6
-        };
-      }
+        // Chip visual segun estado
+        function estadoChip(estado) {
+          const e = (estado || "").toLowerCase();
+          if (e === "disponible") return `<span class="chip green">Disponible</span>`;
+          if (e === "reservado") return `<span class="chip yellow">Reservado</span>`;
+          if (e === "vendido") return `<span class="chip red">Vendido</span>`;
+          return `<span class="chip">Sin estado</span>`;
+        }
 
-      // Eventos por lote (hover/click)
-      function onEachFeature(feature, layer) {
-        layer.on({
-          mouseover: e => {
-            e.target.setStyle({ weight: 3, color: "#000" });
-            const id = feature.properties.id;
-            if (id.includes("ProximaEtapa")) {
-              infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`);
-            } else {
-              const idNice = id.replace(/_/g, " ");
+        // Resalta bloque si disponible
+        function blockClass(estado) {
+          return (estado || "").toLowerCase() === "disponible" ? "block available" : "block";
+        }
+
+        // Chips de financiacion
+        function financiacionChips(lote) {
+          const has12 = !!(lote.cuotas_plan_12 && lote.cuotas_plan_12.trim());
+          const has24 = !!(lote.cuotas_plan_24 && lote.cuotas_plan_24.trim());
+          const has36 = !!(lote.cuotas_plan_36 && lote.cuotas_plan_36.trim());
+          const has48 = !!(lote.cuotas_plan_48 && lote.cuotas_plan_48.trim());
+          const has60 = !!(lote.cuotas_plan_60 && lote.cuotas_plan_60.trim());
+          const chips = [];
+          if (has12) chips.push(`<span class="chip green">12</span>`);
+          if (has24) chips.push(`<span class="chip green">24</span>`);
+          if (has36) chips.push(`<span class="chip green">36</span>`);
+          if (has48) chips.push(`<span class="chip green">48</span>`);
+          if (has60) chips.push(`<span class="chip green">60</span>`);
+          return `
+            <div class="chips-row">
+              ${chips.join("")}
+            </div>
+          `;
+        }
+
+        // Mapea ID del geojson a datos
+        function findLoteInfo(geoId) {
+          if (geoId.includes("ProximaEtapa")) return null;
+          const m = geoId.match(/Sector_([A-Za-z0-9.]+)_Lote_(\d+)/);
+          if (!m) return null;
+          const sector = m[1];
+          const numero = m[2];
+          const arr = lotesData[sector];
+          if (!arr) return null;
+          return arr.find(l => l.numero === numero);
+        }
+
+        // Estilo del poligono segun estado
+        function style(feature) {
+          const lote = findLoteInfo(feature.properties.id);
+          const estado = lote ? lote.estado : "Desconocido";
+          return {
+            color: "#333",
+            weight: 1,
+            fillColor: getColor(estado, feature.properties.id),
+            fillOpacity: 0.6
+          };
+        }
+
+        // Eventos por lote (hover/click)
+        function onEachFeature(feature, layer) {
+          layer.on({
+            mouseover: e => {
+              e.target.setStyle({ weight: 3, color: "#000" });
+              const id = feature.properties.id;
+              if (id.includes("ProximaEtapa")) {
+                infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`);
+              } else {
+                const idNice = escapeHtml(id.replace(/_/g, " "));
+                const lote = findLoteInfo(id);
+                if (lote) {
+                  const estadoLower = (lote.estado || "").toLowerCase();
+                  const superficie = escapeHtml(lote.superficie);
+                  if (estadoLower === "reservado" || estadoLower === "vendido") {
+                    infoControl.update(`
+                      <div class="title">${idNice}</div>
+                      <div class="meta">Superficie: ${superficie} m²</div>
+                      ${estadoChip(lote.estado)}
+                    `);
+                  } else {
+                    infoControl.update(`
+                      <div class="title">${idNice}</div>
+                      <div class="meta">Superficie: ${superficie} m²</div>
+                      ${estadoChip(lote.estado)}
+                      <div class="meta" style="margin-top:6px;"><strong>Financiación:</strong></div>
+                      ${financiacionChips(lote)}
+                    `);
+                  }
+                } else {
+                  infoControl.update(`<div><strong>${idNice}</strong><br>Sin datos.</div>`);
+                }
+              }
+            },
+            mouseout: e => {
+              geojson.resetStyle(e.target);
+              infoControl.update();
+            },
+            click: e => {
+              L.DomEvent.stopPropagation(e);
+              const id = feature.properties.id;
+              if (id.includes("ProximaEtapa")) {
+                infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`);
+                return;
+              }
+              const idNice = escapeHtml(id.replace(/_/g, " "));
               const lote = findLoteInfo(id);
               if (lote) {
                 const estadoLower = (lote.estado || "").toLowerCase();
-                if (estadoLower === "reservado" || estadoLower === "vendido") {
-                  infoControl.update(`
-                    <div class="title">${idNice}</div>
-                    <div class="meta">Superficie: ${lote.superficie} m²</div>
-                    ${estadoChip(lote.estado)}
-                  `);
-                } else {
-                  infoControl.update(`
-                    <div class="title">${idNice}</div>
-                    <div class="meta">Superficie: ${lote.superficie} m²</div>
-                    ${estadoChip(lote.estado)}
-                    <div class="meta" style="margin-top:6px;"><strong>Financiación:</strong></div>
-                    ${financiacionChips(lote)}
-                  `);
+                if (estadoLower === "vendido" || estadoLower === "reservado") {
+                  return;
                 }
+                const has60 = !!(lote.cuotas_plan_60 && lote.cuotas_plan_60.trim());
+                const refuerzoLabel = has60 ? "Refuerzo plan 60" : "Refuerzo plan 48";
+                const superficie = escapeHtml(lote.superficie);
+                const fechaEntrega = escapeHtml(lote.fecha_entrega || "");
+                infoControl.update(`
+                  <div class="${blockClass(lote.estado)}">
+                    <div class="title">${idNice}</div>
+                    ${estadoChip(lote.estado)}
+                    <div class="meta">Superficie: ${superficie} m²</div>
+                  </div>
+                  <div class="block">
+                    <div><strong>Precio de lista:</strong> ${safeMoney(lote.precio_lista || "")}</div>
+                    <div><strong>Entrega inicial:</strong> ${safeMoney(lote.entrega_inicial || "")}</div>
+                    <div><strong>Entrega:</strong> ${fechaEntrega}</div>
+                  </div>
+                  <div class="block">
+                    <div><strong>Plan 12:</strong> ${safeMoney(lote.cuotas_plan_12 || "")}</div>
+                    <div><strong>Plan 24:</strong> ${safeMoney(lote.cuotas_plan_24 || "")}</div>
+                    <div><strong>Plan 36:</strong> ${safeMoney(lote.cuotas_plan_36 || "")}</div>
+                    <div><strong>Plan 48:</strong> ${safeMoney(lote.cuotas_plan_48 || "")}</div>
+                    ${lote.cuotas_plan_60 ? `<div><strong>Plan 60:</strong> ${safeMoney(lote.cuotas_plan_60)}</div>` : ""}
+                    <div><strong>${refuerzoLabel}:</strong> ${safeMoney(lote.plan_60_refuerzo_aguinaldo || lote.plan_48_refuerzo_aguinaldo || "")}</div>
+                  </div>
+                `);
               } else {
                 infoControl.update(`<div><strong>${idNice}</strong><br>Sin datos.</div>`);
               }
             }
-          },
-          mouseout: e => {
-            geojson.resetStyle(e.target);
-            infoControl.update();
-          },
-          click: e => {
-            const id = feature.properties.id;
-            if (id.includes("ProximaEtapa")) {
-              infoControl.update(`<div><strong>NO DISPONIBLE</strong><br>Lote de la próxima etapa del loteo.</div>`);
-              return;
-            }
-            const idNice = id.replace(/_/g, " ");
-            const lote = findLoteInfo(id);
-            if (lote) {
-              const estadoLower = (lote.estado || "").toLowerCase();
-              if (estadoLower === "vendido" || estadoLower === "reservado") {
-                return;
-              }
-              const has60 = !!(lote.cuotas_plan_60 && lote.cuotas_plan_60.trim());
-              const refuerzoLabel = has60 ? "Refuerzo plan 60" : "Refuerzo plan 48";
-              infoControl.update(`
-                <div class="${blockClass(lote.estado)}">
-                  <div class="title">${idNice}</div>
-                  ${estadoChip(lote.estado)}
-                  <div class="meta">Superficie: ${lote.superficie} m²</div>
-                </div>
-                <div class="block">
-                  <div><strong>Precio de lista:</strong> ${formatMoney(lote.precio_lista || "")}</div>
-                  <div><strong>Entrega inicial:</strong> ${formatMoney(lote.entrega_inicial || "")}</div>
-                  <div><strong>Entrega:</strong> ${lote.fecha_entrega || ""}</div>
-                </div>
-                <div class="block">
-                  <div><strong>Plan 12:</strong> ${formatMoney(lote.cuotas_plan_12 || "")}</div>
-                  <div><strong>Plan 24:</strong> ${formatMoney(lote.cuotas_plan_24 || "")}</div>
-                  <div><strong>Plan 36:</strong> ${formatMoney(lote.cuotas_plan_36 || "")}</div>
-                  <div><strong>Plan 48:</strong> ${formatMoney(lote.cuotas_plan_48 || "")}</div>
-                  ${lote.cuotas_plan_60 ? `<div><strong>Plan 60:</strong> ${formatMoney(lote.cuotas_plan_60)}</div>` : ""}
-                  <div><strong>${refuerzoLabel}:</strong> ${formatMoney(lote.plan_60_refuerzo_aguinaldo || lote.plan_48_refuerzo_aguinaldo || "")}</div>
-                </div>
-              `);
-            } else {
-              infoControl.update(`<div><strong>${idNice}</strong><br>Sin datos.</div>`);
-            }
-          }
-        });
-      }
+          });
+        }
 
-      geojson = L.geoJson(geoData, { style, onEachFeature }).addTo(map);
-      geojson.setZIndex(10);
-    })
-    .catch(err => console.error("❌ Error cargando datos:", err));
+        geojson = L.geoJson(geoData, { style, onEachFeature }).addTo(map);
+        geojson.setZIndex(10);
+      })
+      .catch(err => console.error("Error cargando datos:", err));
   </script>
 </body>
 </html>
