@@ -6645,14 +6645,14 @@
       "largo": "25",
       "superficie": "250",
       "precio_contado": "USD 25.000,00",
-      "plan1_entrega_inicial": "USD 12.000,00",
-      "plan1_cuotas": "USD 415,28",
-      "plan1_precio_final": "USD 26.950,00",
-      "plan2_entrega_inicial": "USD 13.500,00",
-      "plan2_cuotas": "USD 287,50",
-      "plan2_precio_final": "USD 27.300,00",
+      "plan1_entrega_inicial": "",
+      "plan1_cuotas": "",
+      "plan1_precio_final": "",
+      "plan2_entrega_inicial": "",
+      "plan2_cuotas": "",
+      "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Vendido"
+      "estado": "Reventa"
     },
     {
       "numero": "13",
