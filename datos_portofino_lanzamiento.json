@@ -143,7 +143,7 @@
       "cuotas_plan_48": "USD 540,72",
       "plan_48_refuerzo_aguinaldo": "USD 463,47",
       "fecha_entrega": "abril 2029",
-      "estado": "Disponible"
+      "estado": "Vendido"
     },
     {
       "numero": "3",
@@ -1926,16 +1926,16 @@
     {
       "numero": "6",
       "superficie": "364,20",
-      "precio_lista": "",
-      "entrega_inicial": "",
-      "cuotas_plan_12": "",
-      "cuotas_plan_24": "",
-      "cuotas_plan_36": "",
-      "cuotas_plan_48": "",
-      "cuotas_plan_60": "",
-      "plan_60_refuerzo_aguinaldo": "",
+      "precio_lista": "USD 28.000,00",
+      "entrega_inicial": "USD 7.560,00",
+      "cuotas_plan_12": "USD 1.776,15",
+      "cuotas_plan_24": "USD 928,18",
+      "cuotas_plan_36": "USD 649,99",
+      "cuotas_plan_48": "USD 526,30",
+      "cuotas_plan_60": "USD 454,68",
+      "plan_60_refuerzo_aguinaldo": "389,72",
       "fecha_entrega": "abril 2029",
-      "estado": "Vendido"
+      "estado": "Disponible"
     },
     {
       "numero": "7",
