@@ -1429,7 +1429,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "4",
@@ -2241,7 +2241,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Disponible"
+      "estado": "Vendido"
     },
     {
       "numero": "19",
@@ -3550,7 +3550,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "28",
@@ -5808,7 +5808,7 @@
       "plan2_cuotas": "USD 256",
       "plan2_precio_final": "USD 27.400",
       "fecha_entrega": "9/2026",
-      "estado": "Reservado"
+      "estado": "Disponible"
     },
     {
       "numero": "27",
