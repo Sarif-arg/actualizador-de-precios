@@ -13,7 +13,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reservado"
+      "estado": "Vendido"
     },
     {
       "numero": "2",
@@ -148,7 +148,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reservado"
+      "estado": "Vendido"
     },
     {
       "numero": "9c",
@@ -675,7 +675,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "32",
@@ -690,7 +690,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "33",
@@ -1519,7 +1519,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "10",
@@ -1849,7 +1849,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "32",
@@ -3475,7 +3475,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "23",
@@ -4334,7 +4334,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "Reventa"
+      "estado": "Disponible"
     },
     {
       "numero": "2",
@@ -7074,7 +7074,7 @@
       "plan2_cuotas": "",
       "plan2_precio_final": "",
       "fecha_entrega": "Inmediata",
-      "estado": "No Disponible"
+      "estado": "Disponible"
     },
     {
       "numero": "1",
