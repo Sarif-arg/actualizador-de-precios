@@ -1316,7 +1316,7 @@
       "cuotas_plan_48": "USD 821,05",
       "plan_48_refuerzo_aguinaldo": "USD 703,76",
       "fecha_entrega": "abril 2029",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "2",
@@ -1963,7 +1963,7 @@
       "cuotas_plan_60": "USD 454,68",
       "plan_60_refuerzo_aguinaldo": "389,72",
       "fecha_entrega": "abril 2029",
-      "estado": "Disponible"
+      "estado": "Reservado"
     },
     {
       "numero": "9",
