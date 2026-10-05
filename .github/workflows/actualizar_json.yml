@@ -5,14 +5,16 @@ permissions:
   actions: read
   checks: read
 
+# Desactivado: Estately Pro ahora es la única fuente de verdad y publica directamente los JSON
+# on:
+#   schedule:
+#     - cron: "0 10 * * *"   # 07:00 Buenos Aires → Portofino
+#     - cron: "30 10 * * *"  # 07:30 Buenos Aires → Terranova
+#     - cron: "45 10 * * *"  # 07:45 Buenos Aires → Portofino Lanzamiento
+#     - cron: "0 22 * * *"   # 19:00 Buenos Aires → Portofino
+#     - cron: "30 22 * * *"  # 19:30 Buenos Aires → Terranova
+#     - cron: "45 22 * * *"  # 19:45 Buenos Aires → Portofino Lanzamiento
 on:
-  schedule:
-    - cron: "0 10 * * *"   # 07:00 Buenos Aires → Portofino
-    - cron: "30 10 * * *"  # 07:30 Buenos Aires → Terranova
-    - cron: "45 10 * * *"  # 07:45 Buenos Aires → Portofino Lanzamiento
-    - cron: "0 22 * * *"   # 19:00 Buenos Aires → Portofino
-    - cron: "30 22 * * *"  # 19:30 Buenos Aires → Terranova
-    - cron: "45 22 * * *"  # 19:45 Buenos Aires → Portofino Lanzamiento
   workflow_dispatch:
     inputs:
       barrio:
