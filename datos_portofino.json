@@ -325,7 +325,7 @@
             "plan60_cuotas": "USD 386,24",
             "plan60_precio_final": "USD 33.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Disponible"
+            "estado": "Vendido"
         },
         {
             "numero": "17",
@@ -351,7 +351,7 @@
             "plan60_cuotas": "USD 386,24",
             "plan60_precio_final": "USD 33.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Disponible"
+            "estado": "Reservado"
         },
         {
             "numero": "19",
@@ -364,7 +364,7 @@
             "plan60_cuotas": "USD 386,24",
             "plan60_precio_final": "USD 33.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Disponible"
+            "estado": "Reservado"
         },
         {
             "numero": "20",
@@ -524,7 +524,7 @@
             "plan60_cuotas": "USD 316,24",
             "plan60_precio_final": "USD 27.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Reservado"
+            "estado": "Vendido"
         },
         {
             "numero": "5",
@@ -550,7 +550,7 @@
             "plan60_cuotas": "USD 316,24",
             "plan60_precio_final": "USD 27.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Reservado"
+            "estado": "Disponible"
         },
         {
             "numero": "7",
@@ -563,7 +563,7 @@
             "plan60_cuotas": "USD 316,24",
             "plan60_precio_final": "USD 27.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Vendido"
+            "estado": "Reservado"
         },
         {
             "numero": "8",
@@ -589,7 +589,7 @@
             "plan60_cuotas": "USD 316,24",
             "plan60_precio_final": "USD 27.106,00",
             "fecha_entrega": "abril 2029",
-            "estado": "Vendido"
+            "estado": "Reservado"
         },
         {
             "numero": "10",
