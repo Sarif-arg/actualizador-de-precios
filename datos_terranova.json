@@ -4910,9 +4910,9 @@
     "Manzana J": [
         {
             "numero": "1",
-            "frente": "12",
+            "frente": "10",
             "largo": "25",
-            "superficie": "300",
+            "superficie": "250",
             "precio_contado": "USD 21.000",
             "plan1_entrega_inicial": "",
             "plan1_cuotas": "",
